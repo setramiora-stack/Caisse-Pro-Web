@@ -5,34 +5,18 @@
 <title>Caisse Pro Dashboard</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-function exportExcel(){
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.json_to_sheet(data);
-    XLSX.utils.book_append_sheet(wb, ws, "Operations");
-    XLSX.writeFile(wb, "caisse_pro.xlsx");
-}
+const SUPABASE_URL = "https://qmkvyuimxnnmsexxchun.supabase.co";
 
-function importExcel(e){
-    const f = e.target.files[0];
-    if(!f) return;
+const SUPABASE_KEY = "sb_publishable_O_WzsuqcNb-laFphCV8jqQ_gNv8nbUr";
 
-    const r = new FileReader();
-
-    r.onload = function(ev){
-        const wb = XLSX.read(ev.target.result,{type:'binary'});
-        const ws = wb.Sheets[wb.SheetNames[0]];
-        data = XLSX.utils.sheet_to_json(ws,{defval:""});
-        save();
-        render();
-        updateTotals();
-        alert("Import terminé");
-    };
-
-    r.readAsBinaryString(f);
-}
+const supabase = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
 </script>
+
 <style>
 body{margin:0;font-family:Arial;background:#0f172a;color:#fff}
 
@@ -139,6 +123,7 @@ tr:hover td{background:#273449}
 <h2>LOGIN</h2>
 <input id="user" value="admin">
 <input id="pass" type="password" placeholder="Mot de passe">
+<input id="licence" placeholder="Clé licence">
 <button onclick="login()" class="save" style="width:100%">Login</button>
 </div>
 
@@ -272,18 +257,73 @@ LISTE DES OPÉRATIONS
 </div>
 
 <script>
+const SUPABASE_URL = "https://qmkvyuimxnnmsexxchun.supabase.co";
 
+const SUPABASE_KEY = "sb_publishable_O_WzsuqcNb-laFphCV8jqQ_gNv8nbUr";
+const supabase = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+async function checkLicence(){
+
+let cle=document.getElementById("licence").value;
+
+const {data,error}=await supabase
+.from("licence")
+.select("*")
+.eq("cle_licence",cle)
+.eq("statut","active")
+.single();
+
+if(error || !data){
+    alert("Licence invalide");
+    return false;
+}
+
+let aujourd=new Date();
+let fin=new Date(data.date_fin);
+
+if(fin < aujourd){
+    alert("Licence expirée");
+    return false;
+}
+
+return true;
+
+}
 let data = JSON.parse(localStorage.getItem("data") || "[]");
 let caisseExtra=JSON.parse(localStorage.getItem("caisseExtra")||"{}");
 let tab="orange";
 let editIndex=-1;
 
+async function loadData(){
+
+const {data:rows,error}=await db
+.from("operation")
+.select("*")
+.order("id",{ascending:true});
+
+
+if(error){
+
+console.log(error);
+return;
+
+}
+
+
+data=rows || [];
+
+render();
+updateTotals();
+
+}
 function fmt(n){
  return (+n||0).toLocaleString('fr-FR').replace(/,/g,' ');
 }
 
 
-function login(){
+async function login(){
 if(user.value==="admin" && pass.value==="1234"){
 loginBox.style.display="none";
 app.style.display="block";
@@ -294,9 +334,9 @@ alert("Utilisateur ou mot de passe incorrect");
 }
 }
 
-function initDate(){
+async function initDate(){
 dateFilter.value=new Date().toISOString().split("T")[0];
-render();
+await loadData();
 loadExtras();
 }
 
@@ -405,7 +445,7 @@ tb.innerHTML+=`
 <td>${i+1}</td>
 <td>${d.date}</td>
 <td>${fmt(d.initial)}</td>
-<td>${d.tel}</td>
+<td>${d.telephone}</td>
 <td>${d.ref}</td>
 <td>${fmt(d.dep)}</td>
 <td>${fmt(d.bon)}</td>
@@ -428,7 +468,7 @@ editIndex=index;
 let d=data[index];
 formCard.style.display="block";
 initial.value=d.initial;
-tel.value=d.tel;
+tel.value=d.telephone;
 ref.value=d.ref;
 dep.value=d.dep;
 bon.value=d.bon;
@@ -538,11 +578,44 @@ function del(index){
     updateTotals();
 }
 
-function save(){
-localStorage.setItem("data",JSON.stringify(data));
+async function save(){
+
+const operation = {
+
+tab:tab,
+date:dateFilter.value,
+initial:+initial.value||0,
+tel:tel.value,
+ref:ref.value,
+dep:+dep.value||0,
+bon:+bon.value||0,
+ret:+ret.value||0,
+frais:+frais.value||0,
+final:+final.value||0
+
+};
+
+
+
+const {error}=await db
+.from("operation")
+.insert(operation);
+
+
+if(error){
+
+console.log(error);
+alert("Erreur enregistrement");
+
+return;
+
 }
 
 
+await loadData();
+
+}
+}
 function exportExcel(){
  const wb=XLSX.utils.book_new();
  const ws=XLSX.utils.json_to_sheet(data);
@@ -550,15 +623,21 @@ function exportExcel(){
  XLSX.writeFile(wb,"caisse_pro.xlsx");
 }
 function importExcel(e){
- const f=e.target.files[0]; if(!f)return;
+ const f=e.target.files[0]; 
+ if(!f)return;
+
  const r=new FileReader();
+
  r.onload=function(ev){
   const wb=XLSX.read(ev.target.result,{type:'binary'});
   const ws=wb.Sheets[wb.SheetNames[0]];
   data=XLSX.utils.sheet_to_json(ws,{defval:""});
-  save();render();updateTotals();
+  save();
+  render();
+  updateTotals();
   alert("Import terminé");
  };
+
  r.readAsBinaryString(f);
 }
 
