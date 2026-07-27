@@ -1,12 +1,568 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-<title>Caisse Pro</title>
+<meta charset="UTF-8">
+<title>Caisse Pro Dashboard</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<script>
+function exportExcel(){
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(data);
+    XLSX.utils.book_append_sheet(wb, ws, "Operations");
+    XLSX.writeFile(wb, "caisse_pro.xlsx");
+}
+
+function importExcel(e){
+    const f = e.target.files[0];
+    if(!f) return;
+
+    const r = new FileReader();
+
+    r.onload = function(ev){
+        const wb = XLSX.read(ev.target.result,{type:'binary'});
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        data = XLSX.utils.sheet_to_json(ws,{defval:""});
+        save();
+        render();
+        updateTotals();
+        alert("Import terminé");
+    };
+
+    r.readAsBinaryString(f);
+}
+</script>
+<style>
+body{margin:0;font-family:Arial;background:#0f172a;color:#fff}
+
+.login{width:320px;margin:120px auto;background:#1e293b;padding:25px;border-radius:12px;text-align:center}
+.login input{width:90%;padding:10px;margin:8px 0;border-radius:6px;border:none}
+
+.container{display:none}
+
+.sidebar{width:240px;height:100vh;position:fixed;left:0;top:0;background:#111827;padding:15px;overflow:auto}
+
+.tab-btn{width:100%;padding:10px;margin:8px 0;border:none;border-radius:8px;color:#fff;font-weight:bold;cursor:pointer}
+.orange{background:#f97316}
+.yas{background:#22c55e}
+.airtel{background:#ef4444}
+.miaro{
+    background:#6366f1;   /* Violet */
+}
+
+.fitia{
+    background:#06b6d4;   /* Bleu turquoise */
+}
+
+.stephanie{
+    background:#e11d48;   /* Rose foncé */
+}
+
+.date-box{margin-top:20px;background:#0b1220;padding:15px;border-radius:12px}
+
+.main{margin-left:260px;padding:20px}
+
+.card{background:#1e293b;padding:15px;border-radius:12px;margin-bottom:15px}
+
+.row{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+    margin-top:15px;
+}
+
+.field{
+    display:flex;
+    flex-direction:column;
+}
+
+.field label{
+    color:#fff;
+    font-size:15px;
+    font-weight:bold;
+    margin-bottom:6px;
+    padding-left:3px;
+}
+
+.field input{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    background:#fff;
+    color:#111827;
+    font-size:15px;
+    box-sizing:border-box;
+}
+
+.field input:focus{
+    outline:none;
+    box-shadow:0 0 0 2px #3b82f6;
+}
+
+.field input[readonly]{
+    background:#e5e7eb;
+    font-weight:bold;
+}
+
+button{cursor:pointer;border:none;padding:10px;border-radius:8px;font-weight:bold;color:white}
+.save{background:#3b82f6}
+.update{background:#f59e0b}
+.del{background:#ef4444}
+
+table{width:100%;border-collapse:collapse}
+th{background:#0b1220;padding:10px}
+td{background:#1e293b;padding:8px;text-align:center}
+
+#opTitle{font-size:30px;font-weight:900;text-align:center;padding:12px;background:#0b1220;border-radius:10px;margin-bottom:10px}
+
+.box{background:#111827;padding:12px;border-radius:10px;text-align:center;margin-top:10px;font-weight:bold}
+.box div{margin-bottom:6px}
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+body{font-family:Inter,Arial,sans-serif;background:linear-gradient(135deg,#0f172a,#1e3a8a)!important}
+.sidebar{box-shadow:4px 0 20px rgba(0,0,0,.35)}
+.card,.box,.login{box-shadow:0 10px 30px rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08)}
+button{transition:.25s ease}
+button:hover{transform:translateY(-2px);filter:brightness(1.08)}
+table{overflow:hidden;border-radius:12px}
+th{position:sticky;top:0}
+tr:hover td{background:#273449}
+#opTitle{background:linear-gradient(90deg,#2563eb,#1d4ed8)}
+</style>
 </head>
 
 <body>
 
-<h1>CAISSE PRO</h1>
+<div class="login" id="loginBox">
+<h2>LOGIN</h2>
+<input id="user" value="admin">
+<input id="pass" type="password" placeholder="Mot de passe">
+<button onclick="login()" class="save" style="width:100%">Login</button>
+</div>
+
+<div class="container" id="app">
+
+<div class="sidebar">
+<h2>💼 CAISSE PRO</h2>
+
+<button class="tab-btn orange" onclick="setTab('orange')">ORANGE</button>
+<button class="tab-btn yas" onclick="setTab('yas')">YAS</button>
+<button class="tab-btn airtel" onclick="setTab('airtel')">AIRTEL</button>
+<button class="tab-btn miaro" onclick="setTab('autre')">TRANSACTION PUCE 1</button>
+
+<button class="tab-btn fitia" onclick="setTab('autre2')">TRANSACTION PUCE 2</button>
+
+<button class="tab-btn stephanie" onclick="setTab('autre3')">TRANSACTION PUCE 3</button>
+<div class="date-box">
+<input
+    type="date"
+    id="dateFilter"
+    onchange="render();loadExtras();initial.value=getLast();updateTotals()">
+</div>
+
+<div class="box" id="bonusGlobal">Bonus: 0</div>
+<div class="box" id="fraisGlobal">Frais: 0</div>
+<div class="box" id="soldeGlobal">Solde Global: 0</div>
+
+<div class="box">
+<div>Espèces</div>
+<input id="especes" oninput="saveExtras();updateTotals()">
+</div>
+
+
+<div class="box">
+<div>Total Credit</div>
+<input id="totalCredit" oninput="saveExtras();updateTotals()">
+</div>
+
+<div class="box" id="totalGeneral">TOTAL GENERAL: 0</div>
+
+</div>
+
+<div class="main">
+
+<div id="opTitle">OPÉRATEUR</div>
+
+<button class="save" onclick="toggleForm()">➕ Nouvelle opération</button>
+
+<button class="save" onclick="exportExcel()">📤 Export Excel</button>
+<button class="update" onclick="document.getElementById('importExcel').click()">📥 Import Excel</button>
+<input type="file" id="importExcel" accept=".xlsx,.xls" style="display:none" onchange="importExcel(event)">
+
+
+<div class="card" id="formCard" style="display:none">
+
+<div class="row">
+
+<div class="field">
+<label>Initial</label>
+<input id="initial" type="number">
+</div>
+
+<div class="field">
+<label>Téléphone</label>
+<input id="tel">
+</div>
+
+<div class="field">
+<label>Référence</label>
+<input id="ref">
+</div>
+
+<div class="field">
+<label>Dépôt</label>
+<input id="dep" type="number" oninput="calc()">
+</div>
+
+<div class="field">
+<label>Bonus</label>
+<input id="bon" type="number" oninput="calc()">
+</div>
+
+<div class="field">
+<label>Retrait</label>
+<input id="ret" type="number" oninput="calc()">
+</div>
+
+<div class="field">
+<label>Frais</label>
+<input id="frais" type="number">
+</div>
+
+<div class="field">
+<label>Final</label>
+<input id="final" readonly>
+</div>
+
+</div>
+<br>
+<button class="save" onclick="add()">ENREGISTRER</button>
+<button class="update" onclick="updateItem()">METTRE À JOUR</button>
+
+</div>
+<h2 id="tableTitle" style="text-align:center;margin:20px 0;">
+LISTE DES OPÉRATIONS
+</h2>
+
+<div class="card">
+
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Date</th>
+<th>Init</th>
+<th>Tél</th>
+<th>Ref</th>
+<th>Dep</th>
+<th>Bon</th>
+<th>Ret</th>
+<th>Frais</th>
+<th>Final</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="tb"></tbody>
+</table><div id="tableTotals" style="margin-top:10px;font-weight:bold;text-align:right"></div>
+
+</div>
+</div>
+
+<script>
+
+let data = JSON.parse(localStorage.getItem("data") || "[]");
+let caisseExtra=JSON.parse(localStorage.getItem("caisseExtra")||"{}");
+let tab="orange";
+let editIndex=-1;
+
+function fmt(n){
+ return (+n||0).toLocaleString('fr-FR').replace(/,/g,' ');
+}
+
+
+function login(){
+if(user.value==="admin" && pass.value==="1234"){
+loginBox.style.display="none";
+app.style.display="block";
+setTab(tab);
+initDate();
+}else{
+alert("Utilisateur ou mot de passe incorrect");
+}
+}
+
+function initDate(){
+dateFilter.value=new Date().toISOString().split("T")[0];
+render();
+loadExtras();
+}
+
+function setTab(t){
+    tab = t;
+
+    let nom = "";
+
+    switch(t){
+        case "orange":
+            nom = "ORANGE";
+            break;
+        case "yas":
+            nom = "YAS";
+            break;
+        case "airtel":
+            nom = "AIRTEL";
+            break;
+        case "autre":
+    nom = "TRANSACTION PUCE 1";
+    break;
+case "autre2":
+    nom = "TRANSACTION PUCE 2";
+    break;
+case "autre3":
+    nom = "TRANSACTION PUCE 3";
+    break;
+         
+        default:
+            nom = t.toUpperCase();
+    }
+
+    opTitle.innerText = "OPÉRATEUR " + nom;
+    document.getElementById("tableTitle").innerText =
+        "LISTE DES OPÉRATIONS " + nom;
+
+    render();
+    updateTotals();
+
+}
+function toggleForm(){
+formCard.style.display=formCard.style.display==="block"?"none":"block";
+initial.value=getLast();
+}
+
+function getLast(){
+ let s=dateFilter.value;
+ let same=data.filter(d=>d.tab===tab&&d.date===s);
+ if(same.length) return +same[same.length-1].final||0;
+ let prev=data.filter(d=>d.tab===tab&&d.date<s).sort((a,b)=>a.date.localeCompare(b.date));
+ return prev.length? +prev[prev.length-1].final||0:0;
+}
+
+function calc(){
+final.value=(+initial.value||0)-(+dep.value||0)+(+bon.value||0)+(+ret.value||0);
+}
+
+function clearInputs(){
+tel.value="";
+ref.value="";
+dep.value="";
+bon.value="";
+ret.value="";
+frais.value="";
+final.value="";
+}
+
+function add(){
+data.push({
+tab,
+date:dateFilter.value,
+initial:+initial.value||0,
+tel:tel.value,
+ref:ref.value,
+dep:+dep.value||0,
+bon:+bon.value||0,
+ret:+ret.value||0,
+frais:+frais.value||0,
+final:+final.value||0
+});
+
+save();
+saveExtras();
+render();
+loadExtras();
+clearInputs();
+initial.value=getLast();
+}
+
+function render(){
+
+    let arr=data.map((d,index)=>({...d,_index:index})).filter(d=>d.tab===tab);
+
+    if(dateFilter.value) arr=arr.filter(d=>d.date===dateFilter.value);
+
+    arr.sort((a,b)=>{
+        if(a.date===b.date) return a._index-b._index;
+        return a.date.localeCompare(b.date);
+    });
+
+    tb.innerHTML="";
+
+    arr.forEach((d,i)=>{
+tb.innerHTML+=`
+<tr>
+<td>${i+1}</td>
+<td>${d.date}</td>
+<td>${fmt(d.initial)}</td>
+<td>${d.tel}</td>
+<td>${d.ref}</td>
+<td>${fmt(d.dep)}</td>
+<td>${fmt(d.bon)}</td>
+<td>${fmt(d.ret)}</td>
+<td>${fmt(d.frais)}</td>
+<td>${fmt(d.final)}</td>
+<td>
+<button class="update" onclick="edit(${d._index})">✏️</button>
+<button class="del" onclick="del(${d._index})">🗑️</button>
+</td>
+</tr>`;
+});
+let tbBonus=0,tbFrais=0;
+arr.forEach(d=>{tbBonus+=(+d.bon||0);tbFrais+=(+d.frais||0);});
+document.getElementById('tableTotals').innerHTML='Total Bonus : '+fmt(tbBonus)+' &nbsp;&nbsp; Total Frais : '+fmt(tbFrais);
+}
+
+function edit(index){
+editIndex=index;
+let d=data[index];
+formCard.style.display="block";
+initial.value=d.initial;
+tel.value=d.tel;
+ref.value=d.ref;
+dep.value=d.dep;
+bon.value=d.bon;
+ret.value=d.ret;
+frais.value=d.frais;
+calc();
+}
+
+function updateItem(){
+if(editIndex<0)return;
+let item=data[editIndex];
+item.initial=+initial.value||0;
+item.tel=tel.value;
+item.ref=ref.value;
+item.dep=+dep.value||0;
+item.bon=+bon.value||0;
+item.ret=+ret.value||0;
+item.frais=+frais.value||0;
+item.final=item.initial-item.dep+item.bon+item.ret;
+save();render();updateTotals();
+clearInputs();initial.value=getLast();editIndex=-1;
+}
+
+/* ================= FIXED FORMULAS ================= */
+function getLastByTab(t){
+
+    let selectedDate = dateFilter.value;
+
+    let arr = data.filter(d =>
+        d.tab === t &&
+        d.date === selectedDate
+    );
+
+    if(arr.length === 0) return 0;
+
+    return +arr[arr.length-1].final || 0;
+}
+function updateTotals(){
+
+let bonus = 0;
+let frais = 0;
+
+let selectedDate = dateFilter.value;
+
+data.forEach(d=>{
+    if(d.date === selectedDate){
+        bonus += (+d.bon || 0);
+        frais += (+d.frais || 0);
+    }
+});
+/* SOLDE GLOBAL */
+let soldeGlobal =
+getLastByTab("orange") +
+getLastByTab("yas") +
+getLastByTab("airtel") +
+getLastByTab("autre") +
+getLastByTab("autre2") +
+getLastByTab("autre3");
+
+/* INPUTS */
+let espece = +especes.value || 0;
+let credit = +totalCredit.value || 0;
+
+/* TOTAL GENERAL */
+let total = soldeGlobal + espece + credit;
+
+/* DISPLAY */
+document.getElementById("soldeGlobal").innerText="Solde Global: "+fmt(soldeGlobal);
+document.getElementById("bonusGlobal").innerText="Bonus: "+fmt(bonus);
+document.getElementById("fraisGlobal").innerText="Frais: "+fmt(frais);
+document.getElementById("totalGeneral").innerText="TOTAL GENERAL: "+fmt(total);
+}
+
+
+function extraKey(){
+    return tab + "_" + dateFilter.value;
+}
+function loadExtras(){
+
+    let e = caisseExtra[extraKey()] || {};
+
+    especes.value = e.especes || "";
+    totalCredit.value = e.credit || "";
+
+    updateTotals();
+}
+
+function saveExtras(){
+
+    caisseExtra[extraKey()] = {
+        especes: +especes.value || 0,
+        credit: +totalCredit.value || 0
+    };
+
+    localStorage.setItem(
+        "caisseExtra",
+        JSON.stringify(caisseExtra)
+    );
+
+    updateTotals();
+}
+
+function del(index){
+    data.splice(index,1);
+    save();
+    render();
+    updateTotals();
+}
+
+function save(){
+localStorage.setItem("data",JSON.stringify(data));
+}
+
+
+function exportExcel(){
+ const wb=XLSX.utils.book_new();
+ const ws=XLSX.utils.json_to_sheet(data);
+ XLSX.utils.book_append_sheet(wb,ws,"Operations");
+ XLSX.writeFile(wb,"caisse_pro.xlsx");
+}
+function importExcel(e){
+ const f=e.target.files[0]; if(!f)return;
+ const r=new FileReader();
+ r.onload=function(ev){
+  const wb=XLSX.read(ev.target.result,{type:'binary'});
+  const ws=wb.Sheets[wb.SheetNames[0]];
+  data=XLSX.utils.sheet_to_json(ws,{defval:""});
+  save();render();updateTotals();
+  alert("Import terminé");
+ };
+ r.readAsBinaryString(f);
+}
+
+</script>
 
 </body>
 </html>
