@@ -4,13 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#07111f">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Caisse Pro">
-<meta name="mobile-web-app-capable" content="yes">
-<title>Caisse Pro V12.2 PWA — Multi-clients</title>
-<link rel="manifest" href="./manifest.webmanifest">
-<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<title>Caisse Pro V12.1 — Multi-clients</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
@@ -99,24 +96,7 @@ input[type="date"]{color-scheme:dark}
 @media(max-width:760px){.sidebar{transform:translateX(-105%);transition:.22s}.sidebar.open{transform:none}.sidebar-backdrop{position:fixed;inset:0;z-index:35;background:rgba(2,6,23,.65)}.sidebar-backdrop.open{display:block}.main{margin-left:0}.mobile-menu{display:grid;place-items:center}.topbar{align-items:flex-start}.topbar-actions{flex-wrap:wrap;justify-content:flex-end}.online-badge{display:none}.page-title h1{font-size:19px}.kpi-grid{grid-template-columns:1fr 1fr}.side-stack{grid-template-columns:1fr}.admin-form-grid{grid-template-columns:1fr}}
 @media(max-width:520px){.auth-panel{padding:6px}.login-card{padding:25px 20px}.topbar{gap:8px}.topbar-actions{width:100%;justify-content:flex-start}.date-control{flex:1}.date-control input{width:100%}.kpi-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.panel{padding:14px}.panel-head{align-items:flex-start;flex-direction:column}.panel-tools{width:100%}.search-wrap{min-width:0;width:100%}.search-wrap input{width:100%}.admin-stats{grid-template-columns:1fr 1fr}.btn .btn-text-mobile{display:none}}
 
-/* PWA & hors ligne */
-.pwa-install{height:38px;padding:0 12px;border-radius:10px;background:rgba(59,130,246,.12);color:#bfdbfe;border:1px solid rgba(59,130,246,.22);font-size:10px;font-weight:800;display:flex;align-items:center;gap:7px}
-.pwa-install:hover{background:rgba(59,130,246,.20)}
-.login-install{width:100%;height:42px;margin-top:10px;border-radius:11px;background:rgba(59,130,246,.10);color:#bfdbfe;border:1px solid rgba(59,130,246,.20);font-weight:750;display:flex;align-items:center;justify-content:center;gap:8px}
-.sync-banner{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px;padding:13px 15px;border-radius:14px;background:rgba(245,158,11,.10);border:1px solid rgba(245,158,11,.22);color:#fde68a}
-.sync-banner.online-pending{background:rgba(59,130,246,.10);border-color:rgba(59,130,246,.22);color:#bfdbfe}
-.sync-banner.syncing{background:rgba(139,92,246,.10);border-color:rgba(139,92,246,.22);color:#ddd6fe}
-.sync-copy{display:flex;align-items:center;gap:11px;min-width:0}.sync-copy>i{width:20px;flex:0 0 auto}.sync-copy strong,.sync-copy span{display:block}.sync-copy strong{font-size:12px}.sync-copy span{font-size:10px;margin-top:3px;line-height:1.45;color:currentColor;opacity:.82}
-.sync-action{height:34px;white-space:nowrap;border-radius:9px;padding:0 11px;background:rgba(255,255,255,.10);color:inherit;border:1px solid currentColor;font-size:10px;font-weight:800}
-.pending-pill{display:inline-flex;align-items:center;margin-left:6px;padding:2px 6px;border-radius:999px;background:rgba(245,158,11,.12);color:#fcd34d;border:1px solid rgba(245,158,11,.22);font-size:8px;font-weight:800;vertical-align:middle}
-.save-state.pending{color:#fcd34d}
-.offline-disabled{opacity:.52;pointer-events:none}
-@media(max-width:760px){
-  .online-badge{display:flex;height:34px;padding:0 9px}
-  .pwa-install{width:38px;padding:0;justify-content:center}.pwa-install span{display:none}
-  .sync-banner{align-items:flex-start;flex-direction:column}.sync-action{width:100%}
-}
-
+.client-edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}.client-edit-grid .field.full{grid-column:1/-1}.danger-note{margin-top:13px;padding:11px 12px;border-radius:10px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.18);color:#fda4af;font-size:10px;line-height:1.55}@media(max-width:560px){.client-edit-grid{grid-template-columns:1fr}.client-edit-grid .field.full{grid-column:auto}}
 </style>
 </head>
 <body>
@@ -147,9 +127,8 @@ input[type="date"]{color-scheme:dark}
       <div class="form-field"><label for="loginPassword">Mot de passe</label><div class="input-wrap"><i data-lucide="lock-keyhole"></i><input id="loginPassword" type="password" placeholder="Votre mot de passe" autocomplete="current-password"><button class="password-toggle" type="button" onclick="togglePassword('loginPassword',this)" aria-label="Afficher le mot de passe"><i data-lucide="eye"></i></button></div></div>
       <div class="form-field"><label for="loginLicence">Clé licence</label><div class="input-wrap"><i data-lucide="key-round"></i><input id="loginLicence" placeholder="CP-CLIENT-XXXXXXXX" autocomplete="off"></div></div>
       <button id="loginButton" class="login-submit" onclick="login()">Se connecter</button>
-      <button id="loginInstallPwaButton" class="login-install hidden" type="button" onclick="installPwa()"><i data-lucide="download"></i> Installer l’application</button>
       <div id="loginStatus" class="message info"></div>
-      <div class="auth-footer">Connexion sécurisée · Mode hors ligne disponible après une première connexion.</div>
+      <div class="auth-footer">Vos données sont isolées et protégées par les règles Supabase.</div>
     </div>
   </div>
 </section>
@@ -157,7 +136,7 @@ input[type="date"]{color-scheme:dark}
 <div class="app" id="app">
   <div id="sidebarBackdrop" class="sidebar-backdrop" onclick="closeSidebar()"></div>
   <aside class="sidebar" id="sidebar">
-    <div class="sidebar-brand"><span class="brand-logo"><i data-lucide="landmark"></i></span><div><strong>Caisse Pro</strong><span>V12.2 PWA · Multi-clients</span></div></div>
+    <div class="sidebar-brand"><span class="brand-logo"><i data-lucide="landmark"></i></span><div><strong>Caisse Pro</strong><span>V12.1 Multi-clients</span></div></div>
 
     <div class="sidebar-section">
       <div class="sidebar-label">Navigation</div>
@@ -183,10 +162,6 @@ input[type="date"]{color-scheme:dark}
   </aside>
 
   <main class="main">
-    <div id="syncBanner" class="sync-banner hidden">
-      <div class="sync-copy"><i id="syncBannerIcon" data-lucide="cloud-off"></i><div><strong id="syncTitle">Mode hors ligne</strong><span id="syncDescription">Les opérations seront gardées sur cet appareil.</span></div></div>
-      <button id="syncNowButton" class="sync-action" type="button" onclick="syncOfflineQueue()">Synchroniser maintenant</button>
-    </div>
     <section id="caisseView" class="view active">
       <header class="topbar">
         <div class="topbar-left">
@@ -194,7 +169,6 @@ input[type="date"]{color-scheme:dark}
           <div class="page-title"><h1>Tableau de caisse</h1><p id="pageSubtitle">Vue opérationnelle du jour</p></div>
         </div>
         <div class="topbar-actions">
-          <button id="installPwaButton" class="pwa-install hidden" type="button" onclick="installPwa()" title="Installer Caisse Pro"><i data-lucide="download"></i><span>Installer</span></button>
           <div id="onlineBadge" class="online-badge"><span class="online-dot"></span><span id="onlineText">En ligne</span></div>
           <div class="date-control"><i data-lucide="calendar-days"></i><input type="date" id="dateFilter" onchange="handleDateChange()"></div>
         </div>
@@ -248,11 +222,11 @@ input[type="date"]{color-scheme:dark}
 
         <aside class="side-stack">
           <div class="surface extra-card">
-            <div class="panel-title" style="margin-bottom:15px"><i data-lucide="banknote"></i><div><h3>Trésorerie opérateur</h3><span>Valeurs complémentaires du jour</span></div></div>
+            <div class="panel-title" style="margin-bottom:15px"><i data-lucide="banknote"></i><div><h3>Trésorerie partagée</h3><span>Visible sur tous les opérateurs</span></div></div>
             <div class="extra-fields"><div class="extra-field"><label>Espèces</label><input type="number" min="0" step="0.01" id="especes" placeholder="0" oninput="scheduleSaveExtras()"></div><div class="extra-field"><label>Total crédit</label><input type="number" min="0" step="0.01" id="totalCredit" placeholder="0" oninput="scheduleSaveExtras()"></div></div>
             <div id="extraSaveState" class="save-state"><span class="dot"></span><span>Synchronisé avec Supabase</span></div>
           </div>
-          <div class="surface side-total"><div class="label">Total général</div><div class="value" id="totalGeneralValue">0</div><div class="hint">Soldes opérateurs + espèces + crédits de tous les opérateurs</div></div>
+          <div class="surface side-total"><div class="label">Total général</div><div class="value" id="totalGeneralValue">0</div><div class="hint">Soldes opérateurs + espèces + crédit partagés</div></div>
           <div class="surface quick-info"><div class="panel-title" style="margin-bottom:7px"><i data-lucide="info"></i><div><h3>Résumé opérateur</h3></div></div><div class="info-row"><span>Solde à la date</span><strong id="currentOperatorBalance">0</strong></div><div class="info-row"><span>Opérations affichées</span><strong id="currentOperatorCount">0</strong></div><div class="info-row"><span>Dernière synchronisation</span><strong id="lastSyncLabel">—</strong></div></div>
         </aside>
       </div>
@@ -312,6 +286,26 @@ input[type="date"]{color-scheme:dark}
 <div class="toast-region" id="toastRegion"></div>
 <div class="modal-backdrop" id="confirmModal"><div class="modal"><div class="modal-icon"><i data-lucide="triangle-alert"></i></div><h3 id="confirmTitle">Confirmation</h3><p id="confirmText">Voulez-vous continuer ?</p><div class="modal-actions"><button class="btn btn-ghost" id="confirmCancel">Annuler</button><button class="btn btn-danger" id="confirmAccept">Confirmer</button></div></div></div>
 <div class="loader-overlay" id="loaderOverlay"><div class="loader-card"><span class="spinner"></span><span id="loaderText">Traitement en cours...</span></div></div>
+<div class="modal-backdrop" id="editClientModal">
+  <div class="modal" style="width:min(580px,100%)">
+    <div class="modal-icon" style="background:rgba(59,130,246,.10);color:#60a5fa"><i data-lucide="building-2"></i></div>
+    <h3>Modifier le client</h3>
+    <p>Modifiez l’identité du client, son statut et sa licence. Les utilisateurs rattachés conserveront leurs comptes.</p>
+    <input type="hidden" id="editClientId">
+    <input type="hidden" id="editLicenceId">
+    <div class="client-edit-grid">
+      <div class="field"><label>Nom du client</label><input id="editClientName" placeholder="Nom du client"></div>
+      <div class="field"><label>Code client</label><input id="editClientCode" oninput="sanitizeClientCode(this)" placeholder="CLIENT"></div>
+      <div class="field"><label>Statut client</label><select id="editClientStatus"><option value="active">Actif</option><option value="blocked">Bloqué</option></select></div>
+      <div class="field"><label>Statut licence</label><select id="editLicenceStatus"><option value="active">Active</option><option value="blocked">Suspendue</option><option value="expired">Expirée</option><option value="inactive">Inactive</option></select></div>
+      <div class="field full"><label>Clé licence</label><input id="editLicenceKey" placeholder="CP-CLIENT-XXXXXXXX"></div>
+      <div class="field"><label>Date d’expiration</label><input id="editLicenceEnd" type="date"></div>
+    </div>
+    <div id="editClientMessage" class="message"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeEditClient()">Annuler</button><button class="btn btn-primary" onclick="saveClientChanges()"><i data-lucide="save"></i> Enregistrer</button></div>
+  </div>
+</div>
+
 
 <script>
 'use strict';
@@ -323,8 +317,7 @@ const OPERATOR_CONFIG = {
 const OPERATOR_KEYS = Object.keys(OPERATOR_CONFIG);
 let operations=[], dayExtras={}, currentUser=null, currentProfile=null, currentLicence=null, currentClient=null;
 let tab='orange', editId=null, licenceTimer=null, extrasSaveTimer=null, adminClients=[], adminProfiles=[], adminLicences=[];
-let confirmResolver=null,pwaInstallPrompt=null,syncInProgress=false,offlineDbPromise=null;
-const OFFLINE_DB_NAME='caisse-pro-offline-v1',OFFLINE_DB_VERSION=1;
+let confirmResolver=null;
 
 const normalizeCode=value=>String(value||'').trim().toLowerCase();
 const codeToEmail=code=>`${normalizeCode(code)}@caissepro.local`;
@@ -346,126 +339,7 @@ function closeConfirm(result){$('confirmModal').classList.remove('open');if(conf
 function togglePassword(id,button){const input=$(id);input.type=input.type==='password'?'text':'password';button.innerHTML=`<i data-lucide="${input.type==='password'?'eye':'eye-off'}"></i>`;refreshIcons()}
 function openSidebar(){$('sidebar').classList.add('open');$('sidebarBackdrop').classList.add('open')}
 function closeSidebar(){$('sidebar').classList.remove('open');$('sidebarBackdrop').classList.remove('open')}
-
-function openOfflineDb(){
-  if(offlineDbPromise)return offlineDbPromise;
-  offlineDbPromise=new Promise((resolve,reject)=>{
-    if(!('indexedDB'in window))return reject(new Error('IndexedDB indisponible.'));
-    const request=indexedDB.open(OFFLINE_DB_NAME,OFFLINE_DB_VERSION);
-    request.onupgradeneeded=()=>{
-      const database=request.result;
-      if(!database.objectStoreNames.contains('cache'))database.createObjectStore('cache',{keyPath:'key'});
-      if(!database.objectStoreNames.contains('queue'))database.createObjectStore('queue',{keyPath:'id'});
-    };
-    request.onsuccess=()=>resolve(request.result);
-    request.onerror=()=>reject(request.error||new Error('Stockage local indisponible.'));
-  });
-  return offlineDbPromise;
-}
-async function idbGet(storeName,key){
-  const database=await openOfflineDb();return new Promise((resolve,reject)=>{const request=database.transaction(storeName,'readonly').objectStore(storeName).get(key);request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error)});
-}
-async function idbPut(storeName,value){
-  const database=await openOfflineDb();return new Promise((resolve,reject)=>{const tx=database.transaction(storeName,'readwrite');tx.objectStore(storeName).put(value);tx.oncomplete=()=>resolve(value);tx.onerror=()=>reject(tx.error)});
-}
-async function idbDelete(storeName,key){
-  const database=await openOfflineDb();return new Promise((resolve,reject)=>{const tx=database.transaction(storeName,'readwrite');tx.objectStore(storeName).delete(key);tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error)});
-}
-async function idbGetAll(storeName){
-  const database=await openOfflineDb();return new Promise((resolve,reject)=>{const request=database.transaction(storeName,'readonly').objectStore(storeName).getAll();request.onsuccess=()=>resolve(request.result||[]);request.onerror=()=>reject(request.error)});
-}
-async function cacheGet(key){
-  try{return(await idbGet('cache',key))?.value??null}catch{try{return JSON.parse(localStorage.getItem(`cp:${key}`))}catch{return null}}
-}
-async function cacheSet(key,value){
-  try{await idbPut('cache',{key,value,updated_at:new Date().toISOString()})}catch{try{localStorage.setItem(`cp:${key}`,JSON.stringify(value))}catch{}}
-}
-async function queueAll(){
-  try{return await idbGetAll('queue')}catch{try{return JSON.parse(localStorage.getItem('cp:offline-queue')||'[]')}catch{return[]}}
-}
-async function queuePut(item){
-  try{await idbPut('queue',item)}catch{const all=await queueAll(),index=all.findIndex(x=>x.id===item.id);if(index>=0)all[index]=item;else all.push(item);localStorage.setItem('cp:offline-queue',JSON.stringify(all))}
-}
-async function queueDelete(id){
-  try{await idbDelete('queue',id)}catch{const all=(await queueAll()).filter(x=>x.id!==id);localStorage.setItem('cp:offline-queue',JSON.stringify(all))}
-}
-async function getClientQueue(clientId=currentProfile?.client_id){
-  if(!clientId)return[];return(await queueAll()).filter(item=>item.client_id===clientId).sort((a,b)=>String(a.created_at).localeCompare(String(b.created_at)));
-}
-async function removeQueuedWhere(predicate){
-  const items=await queueAll();for(const item of items)if(predicate(item))await queueDelete(item.id);
-}
-async function queueMutation(type,payload,{localId=null,replaceKey=null}={}){
-  const clientId=currentProfile?.client_id||payload.client_id;if(!clientId)throw new Error('Client local introuvable.');
-  let item=null;
-  if(replaceKey){const existing=(await getClientQueue(clientId)).find(x=>x.replace_key===replaceKey);if(existing)item=existing}
-  item={...(item||{}),id:item?.id||crypto.randomUUID(),client_id:clientId,type,payload,local_id:localId||item?.local_id||null,replace_key:replaceKey||null,created_at:item?.created_at||new Date().toISOString(),updated_at:new Date().toISOString()};
-  await queuePut(item);await updatePendingUI();return item;
-}
-const accessCacheKey=userId=>`access:${userId}`;
-const operationsCacheKey=clientId=>`operations:${clientId}`;
-const extrasCacheKey=(clientId,date)=>`extras:${clientId}:${date}`;
-async function cacheAccess(access){if(currentUser?.id)await cacheSet(accessCacheKey(currentUser.id),access)}
-async function cachedAccess(userId){return await cacheGet(accessCacheKey(userId))}
-async function cacheOperations(){if(currentProfile?.client_id)await cacheSet(operationsCacheKey(currentProfile.client_id),operations)}
-async function cachedOperations(){return(currentProfile?.client_id&&await cacheGet(operationsCacheKey(currentProfile.client_id)))||[]}
-async function cacheExtras(date=$('dateFilter')?.value){if(currentProfile?.client_id&&date)await cacheSet(extrasCacheKey(currentProfile.client_id,date),dayExtras)}
-async function cachedExtras(date=$('dateFilter')?.value){return(currentProfile?.client_id&&date&&await cacheGet(extrasCacheKey(currentProfile.client_id,date)))||{}}
-function isNetworkError(error){return!navigator.onLine||/failed to fetch|fetch failed|network|load failed|networkerror|functionsfetcherror/i.test(String(error?.message||error||''))}
-function normalizeOperationRow(row){return{...row,initial:Number(row.initial||0),dep:Number(row.dep||0),bon:Number(row.bon||0),ret:Number(row.ret||0),frais:Number(row.frais||0),final:Number(row.final||0)}}
-function sameOperationId(a,b){return String(a)===String(b)}
-function operationOrder(a,b){
-  const av=String(a.created_at||a._local_created_at||a.id||''),bv=String(b.created_at||b._local_created_at||b.id||'');
-  if(/^\d+$/.test(av)&&/^\d+$/.test(bv))return Number(av)-Number(bv);return av.localeCompare(bv);
-}
-function applyPendingOperations(base,items){
-  let result=(base||[]).map(normalizeOperationRow);
-  for(const item of items){
-    if(item.type==='operation_insert'){
-      const existingIndex=result.findIndex(row=>item.payload.offline_uuid&&row.offline_uuid===item.payload.offline_uuid);
-      const localRow=normalizeOperationRow({...item.payload,id:item.local_id||`offline-${item.id}`,_pending:true,_local_created_at:item.created_at});
-      if(existingIndex>=0)result[existingIndex]={...result[existingIndex],_pending:true};else result.push(localRow);
-    }else if(item.type==='operation_update'){
-      result=result.map(row=>sameOperationId(row.id,item.payload.id)?normalizeOperationRow({...row,...item.payload.row,_pending:true}):row);
-    }else if(item.type==='operation_delete'){
-      result=result.filter(row=>!sameOperationId(row.id,item.payload.id));
-    }
-  }
-  return result;
-}
-async function updatePendingUI(){
-  const count=currentProfile?(await getClientQueue()).length:0,online=navigator.onLine;
-  if($('onlineText'))$('onlineText').textContent=online?(count?`En ligne · ${count} en attente`:'En ligne'):(count?`Hors ligne · ${count} en attente`:'Hors ligne');
-  if(!$('syncBanner'))return;
-  $('syncBanner').classList.toggle('hidden',online&&count===0);
-  $('syncBanner').classList.toggle('online-pending',online&&count>0&&!syncInProgress);
-  $('syncBanner').classList.toggle('syncing',syncInProgress);
-  $('syncNowButton').disabled=!online||syncInProgress||count===0;
-  if(syncInProgress){$('syncTitle').textContent='Synchronisation en cours';$('syncDescription').textContent=`${count} modification(s) restante(s).`;return}
-  if(!online){$('syncTitle').textContent='Mode hors ligne';$('syncDescription').textContent=count?`${count} modification(s) sont conservée(s) sur cet appareil et seront envoyée(s) au retour d’Internet.`:'Vous pouvez consulter les données enregistrées et saisir de nouvelles opérations.';return}
-  $('syncTitle').textContent='Données en attente';$('syncDescription').textContent=`${count} modification(s) locale(s) doivent être envoyée(s) vers Supabase.`;
-}
-function toggleInstallButtons(show){['installPwaButton','loginInstallPwaButton'].forEach(id=>$(id)?.classList.toggle('hidden',!show))}
-async function installPwa(){
-  if(!pwaInstallPrompt)return toast('Utilisez le menu du navigateur puis « Installer l’application » ou « Ajouter à l’écran d’accueil ».','info');
-  pwaInstallPrompt.prompt();await pwaInstallPrompt.userChoice;pwaInstallPrompt=null;toggleInstallButtons(false);
-}
-async function registerServiceWorker(){
-  if(!('serviceWorker'in navigator)||!/^https?:$/.test(location.protocol))return;
-  try{
-    const registration=await navigator.serviceWorker.register('./service-worker.js',{scope:'./'});registration.update().catch(()=>{});
-    await navigator.serviceWorker.ready;
-    if(!localStorage.getItem('cp:pwa-ready')){localStorage.setItem('cp:pwa-ready','1');setTimeout(()=>toast('Mode hors ligne activé sur cet appareil.','success','Application prête'),700)}
-  }catch(error){console.warn('Service Worker:',error)}
-}
-
-function updateOnlineStatus(){
-  const online=navigator.onLine;
-  $('onlineBadge')?.classList.toggle('offline',!online);
-  if($('adminNav'))$('adminNav').classList.toggle('offline-disabled',!online);
-  updatePendingUI();
-  if(online&&currentProfile)setTimeout(()=>syncOfflineQueue({silent:false}),350);
-}
+function updateOnlineStatus(){const online=navigator.onLine;$('onlineBadge').classList.toggle('offline',!online);$('onlineText').textContent=online?'En ligne':'Hors ligne'}
 
 async function fetchAccess(user,enteredCode='',enteredLicence=''){
   const {data:profile,error:pErr}=await db.from('profiles').select('id,client_id,code_user,nom,role,cle_licence,statut').eq('id',user.id).single();
@@ -487,76 +361,32 @@ async function fetchAccess(user,enteredCode='',enteredLicence=''){
   return{profile,client,lic};
 }
 async function login(){
-  const btn=$('loginButton');btn.disabled=true;setMessage('loginStatus',navigator.onLine?'Vérification des accès...':'Ouverture du mode hors ligne...','info');
+  const btn=$('loginButton');btn.disabled=true;setMessage('loginStatus','Vérification des accès...','info');
   try{
     const code=$('loginCode').value.trim(),password=$('loginPassword').value,licence=$('loginLicence').value.trim();
     if(!code||!password||!licence)throw new Error('Veuillez renseigner les trois champs.');
     if(!/^[a-zA-Z0-9._-]{3,50}$/.test(code))throw new Error('Format du code utilisateur invalide.');
-    if(!navigator.onLine){
-      const {data}=await db.auth.getSession(),user=data.session?.user;
-      if(!user)throw new Error('Une première connexion Internet est nécessaire sur cet appareil. Ne vous déconnectez pas avant de travailler hors ligne.');
-      const access=await cachedAccess(user.id);
-      if(!access)throw new Error('Les accès hors ligne ne sont pas encore enregistrés. Reconnectez Internet une fois.');
-      if(normalizeCode(access.profile.code_user)!==normalizeCode(code)||String(access.lic.cle_licence)!==licence)throw new Error('Code utilisateur ou clé licence incorrecte pour la session enregistrée.');
-      if(expired(access.lic.date_fin))throw new Error('La licence enregistrée a expiré.');
-      await openApp(user,access);
-      return;
-    }
     const {data,error}=await db.auth.signInWithPassword({email:codeToEmail(code),password});
     if(error||!data.user)throw new Error('Code utilisateur ou mot de passe incorrect.');
-    try{const access=await fetchAccess(data.user,code,licence);currentUser=data.user;await cacheAccess(access);await openApp(data.user,access)}catch(error){await db.auth.signOut();throw error}
+    try{await openApp(data.user,await fetchAccess(data.user,code,licence))}catch(error){await db.auth.signOut();throw error}
   }catch(error){setMessage('loginStatus',error.message||'Connexion impossible.','error')}
   finally{btn.disabled=false}
 }
-async function restoreSession(){
-  const {data}=await db.auth.getSession();if(!data.session?.user)return;
-  const user=data.session.user;
-  try{
-    setBusy(true,navigator.onLine?'Restauration de la session...':'Ouverture des données hors ligne...');
-    let access=null;
-    if(navigator.onLine){
-      try{access=await fetchAccess(user);currentUser=user;await cacheAccess(access)}
-      catch(error){if(!isNetworkError(error))throw error;access=await cachedAccess(user.id)}
-    }else access=await cachedAccess(user.id);
-    if(!access)throw new Error('Connectez cet appareil à Internet au moins une fois pour activer le mode hors ligne.');
-    if(expired(access.lic.date_fin))throw new Error('La licence enregistrée a expiré.');
-    await openApp(user,access);
-  }catch(error){
-    if(navigator.onLine&&!isNetworkError(error))await db.auth.signOut();
-    setMessage('loginStatus',error.message,'error');
-  }finally{setBusy(false)}
-}
+async function restoreSession(){const {data}=await db.auth.getSession();if(!data.session?.user)return;try{setBusy(true,'Restauration de la session...');await openApp(data.session.user,await fetchAccess(data.session.user))}catch(error){await db.auth.signOut();setMessage('loginStatus',error.message,'error')}finally{setBusy(false)}}
 async function openApp(user,access){
-  currentUser=user;currentProfile=access.profile;currentClient=access.client;currentLicence=access.lic;await cacheAccess(access);
+  currentUser=user;currentProfile=access.profile;currentClient=access.client;currentLicence=access.lic;
   $('loginBox').style.display='none';$('app').style.display='block';
   $('userInfo').textContent=currentProfile.nom||currentProfile.code_user;$('clientInfo').textContent=currentClient.nom;
   $('userAvatar').textContent=(currentProfile.nom||currentProfile.code_user||'CP').split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase();
   $('licenceInfo').textContent=`Licence ${currentLicence.cle_licence} · ${currentLicence.date_fin?`expire le ${formatDate(currentLicence.date_fin)}`:'sans expiration'}`;
   $('adminNav').style.display=currentProfile.role==='superadmin'?'flex':'none';$('dateFilter').value=localDate();$('sharedAppLink').value=location.href.split('?')[0].split('#')[0];
-  showView('caisse');setBusy(true,navigator.onLine?'Chargement et synchronisation...':'Chargement des données locales...');
-  if(navigator.onLine)await syncOfflineQueue({silent:true,skipReload:true});
-  await Promise.all([loadOperations(),loadExtras()]);
-  setBusy(false);startLicenceCheck();if(currentProfile.role==='superadmin'&&navigator.onLine)await loadAdminData();updateOnlineStatus();refreshIcons();
+  showView('caisse');setBusy(true,'Chargement de la caisse...');await Promise.all([loadOperations(),loadExtras()]);setBusy(false);startLicenceCheck();if(currentProfile.role==='superadmin')await loadAdminData();refreshIcons();
 }
-async function logout(){
-  const pending=currentProfile?(await getClientQueue()).length:0;
-  if(pending&&!await confirmAction(`${pending} modification(s) ne sont pas encore synchronisée(s). Elles resteront sur cet appareil, mais une connexion Internet sera nécessaire pour les envoyer. Continuer ?`,'Déconnexion avec données en attente'))return;
-  if(licenceTimer)clearInterval(licenceTimer);setBusy(true,'Déconnexion...');
-  try{await db.auth.signOut()}catch{}
-  operations=[];dayExtras={};currentUser=currentProfile=currentClient=currentLicence=null;$('app').style.display='none';$('loginBox').style.display='grid';$('loginPassword').value='';$('loginLicence').value='';setMessage('loginStatus','Déconnexion effectuée.','success');setBusy(false);updatePendingUI();
-}
-function startLicenceCheck(){
-  if(licenceTimer)clearInterval(licenceTimer);
-  licenceTimer=setInterval(async()=>{
-    if(!navigator.onLine||!currentUser)return;
-    try{const access=await fetchAccess(currentUser);currentProfile=access.profile;currentClient=access.client;currentLicence=access.lic;await cacheAccess(access)}
-    catch(error){if(isNetworkError(error))return;toast(error.message,'error','Accès interrompu');await logout()}
-  },300000);
-}
+async function logout(){if(licenceTimer)clearInterval(licenceTimer);setBusy(true,'Déconnexion...');await db.auth.signOut();operations=[];dayExtras={};currentUser=currentProfile=currentClient=currentLicence=null;$('app').style.display='none';$('loginBox').style.display='grid';$('loginPassword').value='';$('loginLicence').value='';setMessage('loginStatus','Déconnexion effectuée.','success');setBusy(false)}
+function startLicenceCheck(){if(licenceTimer)clearInterval(licenceTimer);licenceTimer=setInterval(async()=>{try{const access=await fetchAccess(currentUser);currentProfile=access.profile;currentClient=access.client;currentLicence=access.lic}catch(error){toast(error.message,'error','Accès interrompu');await logout()}},300000)}
 
 function showView(name){
   const adminAllowed=currentProfile?.role==='superadmin';if(name==='admin'&&!adminAllowed)return;
-  if(name==='admin'&&!navigator.onLine)return toast('L’administration nécessite une connexion Internet. La caisse reste disponible hors ligne.','warning');
   $('caisseView').classList.toggle('active',name==='caisse');$('adminView').classList.toggle('active',name==='admin');$('caisseNav').classList.toggle('active',name==='caisse');$('adminNav').classList.toggle('active',name==='admin');$('operatorMenu').style.display=name==='caisse'?'block':'none';closeSidebar();if(name==='admin')loadAdminData();refreshIcons();
 }
 function showAdminSection(name,button){document.querySelectorAll('.admin-section').forEach(el=>el.classList.remove('active'));document.querySelectorAll('.admin-tab').forEach(el=>el.classList.remove('active'));$(`admin${name[0].toUpperCase()+name.slice(1)}`).classList.add('active');button?.classList.add('active');refreshIcons()}
@@ -568,30 +398,20 @@ function setTab(value){
 function handleDateChange(){closeForm();renderOperations();loadExtras();$('pageSubtitle').textContent=`Vue du ${formatDate($('dateFilter').value)}`}
 
 async function loadOperations(){
-  if(!currentProfile)return;
-  const cached=(await cachedOperations()).map(normalizeOperationRow);
-  if(!navigator.onLine){operations=cached;renderOperations();return}
-  const {data,error}=await db.from('operation').select('*').eq('client_id',currentProfile.client_id).order('date',{ascending:true}).order('id',{ascending:true});
-  if(error){
-    operations=cached;renderOperations();
-    return toast(`Données locales affichées. Synchronisation impossible : ${error.message}`,'warning');
-  }
-  operations=applyPendingOperations((data||[]).map(normalizeOperationRow),await getClientQueue());
-  await cacheOperations();renderOperations();
+  if(!currentProfile)return;const {data,error}=await db.from('operation').select('*').eq('client_id',currentProfile.client_id).order('date',{ascending:true}).order('id',{ascending:true});
+  if(error){toast(`Chargement impossible : ${error.message}`,'error');return}
+  operations=(data||[]).map(row=>({...row,initial:Number(row.initial||0),dep:Number(row.dep||0),bon:Number(row.bon||0),ret:Number(row.ret||0),frais:Number(row.frais||0),final:Number(row.final||0)}));renderOperations();
 }
-function selectedRows(){const date=$('dateFilter').value,term=normalizeCode($('operationSearch')?.value);return operations.filter(row=>row.tab===tab&&row.date===date&&(!term||normalizeCode(`${row.tel||''} ${row.ref||''}`).includes(term))).sort(operationOrder)}
+function selectedRows(){const date=$('dateFilter').value,term=normalizeCode($('operationSearch')?.value);return operations.filter(row=>row.tab===tab&&row.date===date&&(!term||normalizeCode(`${row.tel||''} ${row.ref||''}`).includes(term))).sort((a,b)=>a.id-b.id)}
 function renderOperations(){
   if(!$('operationBody'))return;const rows=selectedRows();
-  $('operationBody').innerHTML=rows.map((row,index)=>{const idArg=JSON.stringify(String(row.id));return`<tr><td>${index+1}</td><td>${formatDate(row.date)}${row._pending?'<span class="pending-pill">En attente</span>':''}</td><td class="number-cell">${fmt(row.initial)}</td><td>${esc(row.tel||'—')}</td><td class="ref-cell" title="${esc(row.ref||'')}">${esc(row.ref||'—')}</td><td class="number-cell negative">${fmt(row.dep)}</td><td class="number-cell positive">${fmt(row.bon)}</td><td class="number-cell positive">${fmt(row.ret)}</td><td class="number-cell">${fmt(row.frais)}</td><td class="number-cell positive">${fmt(row.final)}</td><td><div class="action-cell"><button class="btn btn-warning btn-xs" onclick='editOperation(${idArg})' title="Modifier"><i data-lucide="pencil"></i></button><button class="btn btn-danger btn-xs" onclick='deleteOperation(${idArg})' title="Supprimer"><i data-lucide="trash-2"></i></button></div></td></tr>`}).join('');
+  $('operationBody').innerHTML=rows.map((row,index)=>`<tr><td>${index+1}</td><td>${formatDate(row.date)}</td><td class="number-cell">${fmt(row.initial)}</td><td>${esc(row.tel||'—')}</td><td class="ref-cell" title="${esc(row.ref||'')}">${esc(row.ref||'—')}</td><td class="number-cell negative">${fmt(row.dep)}</td><td class="number-cell positive">${fmt(row.bon)}</td><td class="number-cell positive">${fmt(row.ret)}</td><td class="number-cell">${fmt(row.frais)}</td><td class="number-cell positive">${fmt(row.final)}</td><td><div class="action-cell"><button class="btn btn-warning btn-xs" onclick="editOperation(${row.id})" title="Modifier"><i data-lucide="pencil"></i></button><button class="btn btn-danger btn-xs" onclick="deleteOperation(${row.id})" title="Supprimer"><i data-lucide="trash-2"></i></button></div></td></tr>`).join('');
   $('operationEmpty').classList.toggle('hidden',rows.length>0);$('operationBody').closest('table').classList.toggle('hidden',rows.length===0);
   const dep=rows.reduce((sum,row)=>sum+row.dep,0),ret=rows.reduce((sum,row)=>sum+row.ret,0),bonus=rows.reduce((sum,row)=>sum+row.bon,0),frais=rows.reduce((sum,row)=>sum+row.frais,0);
   $('rowCount').textContent=`${rows.length} ligne${rows.length>1?'s':''}`;$('tableDepTotal').textContent=fmt(dep);$('tableRetTotal').textContent=fmt(ret);$('tableBonusTotal').textContent=fmt(bonus);$('tableFraisTotal').textContent=fmt(frais);$('currentOperatorCount').textContent=rows.length;
   updateTotals();refreshIcons();
 }
-function getBalanceAtDate(operator,date){
-  const rows=operations.filter(row=>row.tab===operator&&row.date<=date).sort((a,b)=>String(a.date).localeCompare(String(b.date))||operationOrder(a,b));
-  return rows.length?Number(rows.at(-1).final||0):0;
-}
+function getBalanceAtDate(operator,date){const rows=operations.filter(row=>row.tab===operator&&row.date<=date).sort((a,b)=>String(a.date).localeCompare(String(b.date))||a.id-b.id);return rows.length?Number(rows.at(-1).final||0):0}
 function getLast(){return getBalanceAtDate(tab,$('dateFilter').value)}
 function calc(){$('final').value=numberValue('initial')-numberValue('dep')+numberValue('bon')+numberValue('ret')}
 function openNewOperation(){editId=null;$('formTitle').textContent='Nouvelle opération';$('submitOperationButton').innerHTML='<i data-lucide="save"></i> Enregistrer';clearForm(false);$('formCard').classList.add('open');$('initial').focus();refreshIcons()}
@@ -599,169 +419,72 @@ function closeForm(){$('formCard').classList.remove('open');editId=null;clearFor
 function clearForm(keepOpen=false){['tel','ref','dep','bon','ret','frais','final'].forEach(id=>$(id).value='');$('initial').value=getLast();editId=null;if(!keepOpen)$('formCard')?.classList.remove('open');$('formTitle').textContent='Nouvelle opération';$('submitOperationButton').innerHTML='<i data-lucide="save"></i> Enregistrer';calc();refreshIcons()}
 function formData(owner=false){calc();const row={tab,date:$('dateFilter').value,initial:numberValue('initial'),tel:$('tel').value.trim(),ref:$('ref').value.trim(),dep:numberValue('dep'),bon:numberValue('bon'),ret:numberValue('ret'),frais:numberValue('frais'),final:numberValue('final')};if(owner){row.client_id=currentProfile.client_id;row.created_by=currentUser.id}return row}
 function validateOperation(row){if(!row.date)return'La date est obligatoire.';for(const key of['initial','dep','bon','ret','frais','final'])if(!Number.isFinite(row[key]))return'Un montant saisi est invalide.';for(const key of['dep','bon','ret','frais'])if(row[key]<0)return'Les montants ne peuvent pas être négatifs.';if(row.dep===0&&row.bon===0&&row.ret===0&&row.frais===0)return'Renseignez au moins un mouvement financier.';return''}
-function findDuplicate(row,excludeId=null){return operations.find(item=>!sameOperationId(item.id,excludeId)&&item.tab===row.tab&&item.date===row.date&&row.ref&&normalizeCode(item.ref)===normalizeCode(row.ref))}
-
-async function remoteInsertOperation(row){
-  let result=await db.from('operation').upsert(row,{onConflict:'offline_uuid'});
-  if(result.error&&/offline_uuid|schema cache/i.test(result.error.message||'')){
-    const legacy={...row};delete legacy.offline_uuid;result=await db.from('operation').insert(legacy);
-  }
-  return result;
-}
-async function queueOfflineInsert(row){
-  const offlineUuid=row.offline_uuid||crypto.randomUUID(),payload={...row,offline_uuid:offlineUuid},localId=`offline-${offlineUuid}`;
-  operations.push(normalizeOperationRow({...payload,id:localId,_pending:true,_local_created_at:new Date().toISOString()}));
-  await queueMutation('operation_insert',payload,{localId});await cacheOperations();renderOperations();return localId;
-}
-async function queueOfflineUpdate(id,row){
-  const current=operations.find(item=>sameOperationId(item.id,id));
-  if(String(id).startsWith('offline-')){
-    const queued=(await getClientQueue()).find(item=>item.type==='operation_insert'&&item.local_id===String(id));
-    if(queued){queued.payload={...queued.payload,...row};queued.updated_at=new Date().toISOString();await queuePut(queued)}
-  }else await queueMutation('operation_update',{id,row},{replaceKey:`operation-update:${id}`});
-  if(current)Object.assign(current,row,{_pending:true});await cacheOperations();renderOperations();
-}
-async function queueOfflineDelete(id){
-  if(String(id).startsWith('offline-')){
-    await removeQueuedWhere(item=>item.type==='operation_insert'&&item.local_id===String(id));
-  }else{
-    await removeQueuedWhere(item=>item.client_id===currentProfile.client_id&&item.type==='operation_update'&&sameOperationId(item.payload.id,id));
-    await queueMutation('operation_delete',{id},{replaceKey:`operation-delete:${id}`});
-  }
-  operations=operations.filter(item=>!sameOperationId(item.id,id));await cacheOperations();renderOperations();
-}
-async function syncOfflineQueue(options={}){
-  const {silent=false,skipReload=false}=options;if(syncInProgress||!navigator.onLine||!currentProfile)return false;
-  let items=await getClientQueue();if(!items.length){await updatePendingUI();return true}
-  syncInProgress=true;await updatePendingUI();if(!silent)setBusy(true,'Synchronisation des données hors ligne...');
-  let completed=0;
-  try{
-    for(const item of items){
-      let error=null;
-      if(item.type==='operation_insert')({error}=await remoteInsertOperation(item.payload));
-      else if(item.type==='operation_update')({error}=await db.from('operation').update(item.payload.row).eq('id',item.payload.id).eq('client_id',item.client_id));
-      else if(item.type==='operation_delete')({error}=await db.from('operation').delete().eq('id',item.payload.id).eq('client_id',item.client_id));
-      else if(item.type==='extra_upsert')({error}=await db.from('caisse_extra').upsert(item.payload,{onConflict:'client_id,date,tab'}));
-      if(error)throw error;
-      await queueDelete(item.id);completed++;await updatePendingUI();
-    }
-    if(!skipReload)await Promise.all([loadOperations(),loadExtras()]);
-    if(!silent&&completed)toast(`${completed} modification(s) synchronisée(s) avec Supabase.`);
-    return true;
-  }catch(error){
-    if(!silent)toast(`Synchronisation interrompue : ${error.message}`,'error');
-    return false;
-  }finally{
-    syncInProgress=false;if(!silent)setBusy(false);await updatePendingUI();
-  }
-}
-
+function findDuplicate(row,excludeId=null){return operations.find(item=>item.id!==excludeId&&item.tab===row.tab&&item.date===row.date&&row.ref&&normalizeCode(item.ref)===normalizeCode(row.ref))}
 async function submitOperation(){if(editId===null)await addOperation();else await updateOperation()}
 async function addOperation(){
   const row=formData(true),validation=validateOperation(row);if(validation)return toast(validation,'warning');
-  row.offline_uuid=crypto.randomUUID();
   const duplicate=findDuplicate(row);if(duplicate&&!await confirmAction(`La référence « ${row.ref} » existe déjà pour ${OPERATOR_CONFIG[tab].name} à cette date. Enregistrer quand même ?`,'Référence en double'))return;
-  if(!navigator.onLine){await queueOfflineInsert(row);closeForm();return toast('Opération enregistrée hors ligne. Elle sera synchronisée automatiquement.','warning')}
-  setBusy(true,'Enregistrement de l’opération...');
-  const {error}=await remoteInsertOperation(row);setBusy(false);
-  if(error){
-    if(isNetworkError(error)){await queueOfflineInsert(row);closeForm();return toast('Connexion interrompue : opération gardée hors ligne.','warning')}
-    return toast(error.message,'error');
-  }
-  await loadOperations();closeForm();toast('Opération enregistrée avec succès.');
+  setBusy(true,'Enregistrement de l’opération...');const {error}=await db.from('operation').insert(row);setBusy(false);if(error)return toast(error.message,'error');await loadOperations();closeForm();toast('Opération enregistrée avec succès.')
 }
-function editOperation(id){
-  const row=operations.find(item=>sameOperationId(item.id,id));if(!row)return;editId=String(id);$('formCard').classList.add('open');$('formTitle').textContent='Modifier l’opération';$('submitOperationButton').innerHTML='<i data-lucide="save"></i> Enregistrer les modifications';for(const key of['initial','tel','ref','dep','bon','ret','frais'])$(key).value=row[key]??'';calc();window.scrollTo({top:0,behavior:'smooth'});refreshIcons();
-}
+function editOperation(id){const row=operations.find(item=>item.id===id);if(!row)return;editId=id;$('formCard').classList.add('open');$('formTitle').textContent='Modifier l’opération';$('submitOperationButton').innerHTML='<i data-lucide="save"></i> Enregistrer les modifications';for(const key of['initial','tel','ref','dep','bon','ret','frais'])$(key).value=row[key]??'';calc();window.scrollTo({top:0,behavior:'smooth'});refreshIcons()}
 async function updateOperation(){
   if(editId===null)return toast('Sélectionnez une opération à modifier.','warning');const row=formData(),validation=validateOperation(row);if(validation)return toast(validation,'warning');
   const duplicate=findDuplicate(row,editId);if(duplicate&&!await confirmAction(`La référence « ${row.ref} » existe déjà. Enregistrer quand même ?`,'Référence en double'))return;
-  if(!navigator.onLine){await queueOfflineUpdate(editId,row);closeForm();return toast('Modification gardée hors ligne.','warning')}
-  if(String(editId).startsWith('offline-')){await queueOfflineUpdate(editId,row);closeForm();await syncOfflineQueue();return}
-  setBusy(true,'Mise à jour de l’opération...');const {error}=await db.from('operation').update(row).eq('id',editId).eq('client_id',currentProfile.client_id);setBusy(false);
-  if(error){
-    if(isNetworkError(error)){await queueOfflineUpdate(editId,row);closeForm();return toast('Connexion interrompue : modification gardée hors ligne.','warning')}
-    return toast(error.message,'error');
-  }
-  await loadOperations();closeForm();toast('Opération mise à jour.');
+  setBusy(true,'Mise à jour de l’opération...');const {error}=await db.from('operation').update(row).eq('id',editId).eq('client_id',currentProfile.client_id);setBusy(false);if(error)return toast(error.message,'error');await loadOperations();closeForm();toast('Opération mise à jour.')
 }
-async function deleteOperation(id){
-  if(!await confirmAction('Cette opération sera supprimée. Hors ligne, la suppression sera appliquée au retour d’Internet.','Supprimer l’opération ?'))return;
-  if(!navigator.onLine||String(id).startsWith('offline-')){await queueOfflineDelete(id);return toast('Suppression enregistrée hors ligne.','warning')}
-  setBusy(true,'Suppression...');const {error}=await db.from('operation').delete().eq('id',id).eq('client_id',currentProfile.client_id);setBusy(false);
-  if(error){
-    if(isNetworkError(error)){await queueOfflineDelete(id);return toast('Connexion interrompue : suppression gardée hors ligne.','warning')}
-    return toast(error.message,'error');
-  }
-  await loadOperations();toast('Opération supprimée.','success');
-}
+async function deleteOperation(id){if(!await confirmAction('Cette opération sera supprimée définitivement.','Supprimer l’opération ?'))return;setBusy(true,'Suppression...');const {error}=await db.from('operation').delete().eq('id',id).eq('client_id',currentProfile.client_id);setBusy(false);if(error)return toast(error.message,'error');await loadOperations();toast('Opération supprimée.','success')}
 
 async function loadExtras(){
-  if(!currentProfile)return;const date=$('dateFilter').value,cached=await cachedExtras(date);
-  if(!navigator.onLine){dayExtras=cached||{};fillCurrentExtraInputs();updateTotals();markExtraPending();return}
-  const {data,error}=await db.from('caisse_extra').select('tab,especes,credit').eq('client_id',currentProfile.client_id).eq('date',date);
-  if(error){dayExtras=cached||{};fillCurrentExtraInputs();updateTotals();markExtraPending();return toast(`Trésorerie locale affichée : ${error.message}`,'warning')}
+  if(!currentProfile)return;const date=$('dateFilter').value;const {data,error}=await db.from('caisse_extra').select('tab,especes,credit').eq('client_id',currentProfile.client_id).eq('date',date);
+  if(error){dayExtras={};fillCurrentExtraInputs();updateTotals();return toast(`Trésorerie non chargée : ${error.message}`,'error')}
   dayExtras={};for(const row of data||[])dayExtras[row.tab]={especes:Number(row.especes||0),credit:Number(row.credit||0)};
-  for(const item of await getClientQueue())if(item.type==='extra_upsert'&&item.payload.date===date)dayExtras[item.payload.tab]={especes:Number(item.payload.especes||0),credit:Number(item.payload.credit||0)};
-  await cacheExtras(date);fillCurrentExtraInputs();updateTotals();(await getClientQueue()).some(item=>item.type==='extra_upsert'&&item.payload.date===date)?markExtraPending():markExtraSaved();
-}
-function fillCurrentExtraInputs(){const extra=dayExtras[tab]||{};$('especes').value=extra.especes||'';$('totalCredit').value=extra.credit||''}
-function scheduleSaveExtras(){dayExtras[tab]={especes:numberValue('especes'),credit:numberValue('totalCredit')};updateTotals();markExtraSaving();clearTimeout(extrasSaveTimer);extrasSaveTimer=setTimeout(saveExtras,650)}
-async function saveExtras(){
-  if(!currentProfile)return;const row={client_id:currentProfile.client_id,date:$('dateFilter').value,tab,especes:numberValue('especes'),credit:numberValue('totalCredit'),updated_by:currentUser.id,updated_at:new Date().toISOString()};
-  dayExtras[tab]={especes:row.especes,credit:row.credit};await cacheExtras(row.date);
-  if(!navigator.onLine){await queueMutation('extra_upsert',row,{replaceKey:`extra:${row.date}:${row.tab}`});markExtraPending();updateTotals();return}
-  const {error}=await db.from('caisse_extra').upsert(row,{onConflict:'client_id,date,tab'});
-  if(error){
-    if(isNetworkError(error)){await queueMutation('extra_upsert',row,{replaceKey:`extra:${row.date}:${row.tab}`});markExtraPending();updateTotals();return}
-    markExtraError();return toast(`Sauvegarde impossible : ${error.message}`,'error');
+  if(!dayExtras.global){
+    dayExtras.global={
+      especes:OPERATOR_KEYS.reduce((sum,key)=>sum+Number(dayExtras[key]?.especes||0),0),
+      credit:OPERATOR_KEYS.reduce((sum,key)=>sum+Number(dayExtras[key]?.credit||0),0)
+    };
   }
-  await removeQueuedWhere(item=>item.client_id===currentProfile.client_id&&item.type==='extra_upsert'&&item.replace_key===`extra:${row.date}:${row.tab}`);
-  markExtraSaved();updateTotals();await updatePendingUI();
+  fillCurrentExtraInputs();updateTotals();markExtraSaved();
+}
+function fillCurrentExtraInputs(){const extra=dayExtras.global||{};$('especes').value=extra.especes||'';$('totalCredit').value=extra.credit||''}
+function scheduleSaveExtras(){dayExtras.global={especes:numberValue('especes'),credit:numberValue('totalCredit')};updateTotals();markExtraSaving();clearTimeout(extrasSaveTimer);extrasSaveTimer=setTimeout(saveExtras,650)}
+async function saveExtras(){
+  if(!currentProfile)return;const row={client_id:currentProfile.client_id,date:$('dateFilter').value,tab:'global',especes:numberValue('especes'),credit:numberValue('totalCredit'),updated_by:currentUser.id,updated_at:new Date().toISOString()};
+  const {error}=await db.from('caisse_extra').upsert(row,{onConflict:'client_id,date,tab'});if(error){markExtraError();return toast(`Sauvegarde impossible : ${error.message}`,'error')}dayExtras.global={especes:row.especes,credit:row.credit};markExtraSaved();updateTotals();
 }
 function markExtraSaving(){const el=$('extraSaveState');el.className='save-state saving';el.lastElementChild.textContent='Synchronisation...'}
 function markExtraSaved(){const el=$('extraSaveState');el.className='save-state saved';el.lastElementChild.textContent='Synchronisé avec Supabase';$('lastSyncLabel').textContent=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}
-function markExtraPending(){const el=$('extraSaveState');el.className='save-state pending';el.lastElementChild.textContent='Enregistré sur cet appareil · en attente de synchronisation'}
 function markExtraError(){const el=$('extraSaveState');el.className='save-state';el.lastElementChild.textContent='Échec de synchronisation'}
 function updateTotals(){
-  if(!$('dateFilter').value)return;const date=$('dateFilter').value,day=operations.filter(row=>row.date===date);const bonus=day.reduce((sum,row)=>sum+row.bon,0),frais=day.reduce((sum,row)=>sum+row.frais,0),solde=OPERATOR_KEYS.reduce((sum,key)=>sum+getBalanceAtDate(key,date),0),extras=OPERATOR_KEYS.reduce((sum,key)=>sum+Number(dayExtras[key]?.especes||0)+Number(dayExtras[key]?.credit||0),0),total=solde+extras;
+  if(!$('dateFilter').value)return;const date=$('dateFilter').value,day=operations.filter(row=>row.date===date);const bonus=day.reduce((sum,row)=>sum+row.bon,0),frais=day.reduce((sum,row)=>sum+row.frais,0),solde=OPERATOR_KEYS.reduce((sum,key)=>sum+getBalanceAtDate(key,date),0),extras=Number(dayExtras.global?.especes||0)+Number(dayExtras.global?.credit||0),total=solde+extras;
   $('bonusGlobalValue').textContent=fmt(bonus);$('fraisGlobalValue').textContent=fmt(frais);$('soldeGlobalValue').textContent=fmt(solde);$('operationCountValue').textContent=day.length;$('totalGeneralValue').textContent=fmt(total);$('currentOperatorBalance').textContent=fmt(getBalanceAtDate(tab,date));$('operatorDateLabel').textContent=`Opérations du ${formatDate(date)}`;$('pageSubtitle').textContent=`Vue du ${formatDate(date)}`;
 }
 
 function excelDate(value){if(typeof value==='number'){const parsed=XLSX.SSF.parse_date_code(value);if(parsed)return`${parsed.y}-${String(parsed.m).padStart(2,'0')}-${String(parsed.d).padStart(2,'0')}`}const str=String(value||'').trim();if(/^\d{4}-\d{2}-\d{2}/.test(str))return str.slice(0,10);const match=str.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);if(match)return`${match[3]}-${match[2].padStart(2,'0')}-${match[1].padStart(2,'0')}`;return localDate()}
 function normalizeTab(value){const raw=normalizeCode(value).replace(/\s+/g,'');const map={orange:'orange',yas:'yas',airtel:'airtel',autre:'autre',autre2:'autre2',autre3:'autre3',transactionpuce1:'autre',transactionpuce2:'autre2',transactionpuce3:'autre3',puce1:'autre',puce2:'autre2',puce3:'autre3'};return map[raw]||'orange'}
 async function exportExcel(){
-  if(!window.XLSX)return toast('Bibliothèque Excel indisponible. Ouvrez l’application une fois avec Internet pour activer son cache.','error');setBusy(true,'Préparation du fichier Excel...');
+  if(!window.XLSX)return toast('Bibliothèque Excel indisponible. Vérifiez la connexion Internet.','error');setBusy(true,'Préparation du fichier Excel...');
   try{
-    let allExtras=[];
-    if(navigator.onLine){
-      const result=await db.from('caisse_extra').select('date,tab,especes,credit').eq('client_id',currentProfile.client_id).order('date');if(result.error)throw result.error;allExtras=result.data||[];
-    }else allExtras=OPERATOR_KEYS.map(key=>({date:$('dateFilter').value,tab:key,especes:Number(dayExtras[key]?.especes||0),credit:Number(dayExtras[key]?.credit||0)}));
-    const operationRows=operations.map(row=>({Opérateur:OPERATOR_CONFIG[row.tab]?.name||row.tab,Date:row.date,Initial:row.initial,Téléphone:row.tel,Référence:row.ref,Dépôt:row.dep,Bonus:row.bon,Retrait:row.ret,Frais:row.frais,Final:row.final,Statut:row._pending?'En attente de synchronisation':'Synchronisé'}));
-    const date=$('dateFilter').value,summary=OPERATOR_KEYS.map(key=>{const rows=operations.filter(row=>row.tab===key&&row.date===date),extra=dayExtras[key]||{};return{Opérateur:OPERATOR_CONFIG[key].name,'Solde à la date':getBalanceAtDate(key,date),Dépôts:rows.reduce((s,x)=>s+x.dep,0),Retraits:rows.reduce((s,x)=>s+x.ret,0),Bonus:rows.reduce((s,x)=>s+x.bon,0),Frais:rows.reduce((s,x)=>s+x.frais,0),Espèces:Number(extra.especes||0),Crédit:Number(extra.credit||0),Opérations:rows.length}});
-    const extraRows=allExtras.map(row=>({Date:row.date,Opérateur:OPERATOR_CONFIG[row.tab]?.name||row.tab,Espèces:Number(row.especes||0),Crédit:Number(row.credit||0)}));
-    const wb=XLSX.utils.book_new(),wsOps=XLSX.utils.json_to_sheet(operationRows),wsSummary=XLSX.utils.json_to_sheet(summary),wsExtras=XLSX.utils.json_to_sheet(extraRows);wsOps['!cols']=[{wch:22},{wch:13},{wch:14},{wch:18},{wch:24},{wch:14},{wch:14},{wch:14},{wch:14},{wch:14},{wch:24}];wsSummary['!cols']=Array(10).fill({wch:18});wsExtras['!cols']=[{wch:13},{wch:22},{wch:16},{wch:16}];XLSX.utils.book_append_sheet(wb,wsOps,'Opérations');XLSX.utils.book_append_sheet(wb,wsSummary,'Résumé du jour');XLSX.utils.book_append_sheet(wb,wsExtras,'Espèces et crédits');XLSX.writeFile(wb,`caisse_${currentClient.code_client}_${date}.xlsx`);toast(navigator.onLine?'Fichier Excel généré.':'Fichier Excel généré à partir des données locales.','success')
+    const {data:allExtras,error}=await db.from('caisse_extra').select('date,tab,especes,credit').eq('client_id',currentProfile.client_id).order('date');if(error)throw error;
+    const operationRows=operations.map(row=>({Opérateur:OPERATOR_CONFIG[row.tab]?.name||row.tab,Date:row.date,Initial:row.initial,Téléphone:row.tel,Référence:row.ref,Dépôt:row.dep,Bonus:row.bon,Retrait:row.ret,Frais:row.frais,Final:row.final}));
+    const date=$('dateFilter').value,sharedExtra=dayExtras.global||{},summary=OPERATOR_KEYS.map(key=>{const rows=operations.filter(row=>row.tab===key&&row.date===date);return{Opérateur:OPERATOR_CONFIG[key].name,'Solde à la date':getBalanceAtDate(key,date),Dépôts:rows.reduce((s,x)=>s+x.dep,0),Retraits:rows.reduce((s,x)=>s+x.ret,0),Bonus:rows.reduce((s,x)=>s+x.bon,0),Frais:rows.reduce((s,x)=>s+x.frais,0),'Espèces partagées':Number(sharedExtra.especes||0),'Crédit partagé':Number(sharedExtra.credit||0),Opérations:rows.length}});
+    const extraRows=(allExtras||[]).map(row=>({Date:row.date,Opérateur:row.tab==='global'?'Tous les opérateurs':(OPERATOR_CONFIG[row.tab]?.name||row.tab),Espèces:Number(row.especes||0),Crédit:Number(row.credit||0)}));
+    const wb=XLSX.utils.book_new(),wsOps=XLSX.utils.json_to_sheet(operationRows),wsSummary=XLSX.utils.json_to_sheet(summary),wsExtras=XLSX.utils.json_to_sheet(extraRows);wsOps['!cols']=[{wch:22},{wch:13},{wch:14},{wch:18},{wch:24},{wch:14},{wch:14},{wch:14},{wch:14},{wch:14}];wsSummary['!cols']=Array(10).fill({wch:18});wsExtras['!cols']=[{wch:13},{wch:22},{wch:16},{wch:16}];XLSX.utils.book_append_sheet(wb,wsOps,'Opérations');XLSX.utils.book_append_sheet(wb,wsSummary,'Résumé du jour');XLSX.utils.book_append_sheet(wb,wsExtras,'Espèces et crédits');XLSX.writeFile(wb,`caisse_${currentClient.code_client}_${date}.xlsx`);toast('Fichier Excel généré.')
   }catch(error){toast(`Export impossible : ${error.message}`,'error')}finally{setBusy(false)}
 }
 async function importExcel(event){
-  const file=event.target.files[0];if(!file)return;if(!window.XLSX){event.target.value='';return toast('Bibliothèque Excel indisponible. Ouvrez une fois l’application avec Internet.','error')}
+  const file=event.target.files[0];if(!file)return;if(!window.XLSX){event.target.value='';return toast('Bibliothèque Excel indisponible.','error')}
   try{
     setBusy(true,'Analyse du fichier Excel...');const buffer=await file.arrayBuffer(),wb=XLSX.read(buffer,{type:'array'}),raw=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
-    const rows=raw.map(item=>{const dep=Number(item.dep??item.Dépôt??item.Depot??0),bon=Number(item.bon??item.Bonus??0),ret=Number(item.ret??item.Retrait??0),initial=Number(item.initial??item.Initial??0);return{client_id:currentProfile.client_id,created_by:currentUser.id,offline_uuid:crypto.randomUUID(),tab:normalizeTab(item.tab??item.Opérateur??item.Operateur),date:excelDate(item.date??item.Date),initial:Number.isFinite(initial)?initial:0,tel:String(item.tel??item.Téléphone??item.Telephone??''),ref:String(item.ref??item.Référence??item.Reference??''),dep:Number.isFinite(dep)?dep:0,bon:Number.isFinite(bon)?bon:0,ret:Number.isFinite(ret)?ret:0,frais:Number(item.frais??item.Frais??0)||0,final:Number(item.final??item.Final??(initial-dep+bon+ret))||0}}).filter(row=>!validateOperation(row));
+    const rows=raw.map(item=>{const dep=Number(item.dep??item.Dépôt??item.Depot??0),bon=Number(item.bon??item.Bonus??0),ret=Number(item.ret??item.Retrait??0),initial=Number(item.initial??item.Initial??0);return{client_id:currentProfile.client_id,created_by:currentUser.id,tab:normalizeTab(item.tab??item.Opérateur??item.Operateur),date:excelDate(item.date??item.Date),initial:Number.isFinite(initial)?initial:0,tel:String(item.tel??item.Téléphone??item.Telephone??''),ref:String(item.ref??item.Référence??item.Reference??''),dep:Number.isFinite(dep)?dep:0,bon:Number.isFinite(bon)?bon:0,ret:Number.isFinite(ret)?ret:0,frais:Number(item.frais??item.Frais??0)||0,final:Number(item.final??item.Final??(initial-dep+bon+ret))||0}}).filter(row=>!validateOperation(row));
     if(!rows.length)throw new Error('Aucune ligne valide à importer.');
-    const fingerprints=new Set(operations.map(row=>`${row.tab}|${row.date}|${normalizeCode(row.ref)}|${row.initial}|${row.dep}|${row.bon}|${row.ret}|${row.final}`)),unique=[];for(const row of rows){const fp=`${row.tab}|${row.date}|${normalizeCode(row.ref)}|${row.initial}|${row.dep}|${row.bon}|${row.ret}|${row.final}`;if(!fingerprints.has(fp)){fingerprints.add(fp);unique.push(row)}}
+    const fingerprints=new Set(operations.map(row=>`${row.tab}|${row.date}|${normalizeCode(row.ref)}|${row.initial}|${row.dep}|${row.bon}|${row.ret}|${row.final}`));const unique=[];for(const row of rows){const fp=`${row.tab}|${row.date}|${normalizeCode(row.ref)}|${row.initial}|${row.dep}|${row.bon}|${row.ret}|${row.final}`;if(!fingerprints.has(fp)){fingerprints.add(fp);unique.push(row)}}
     if(!unique.length)throw new Error('Toutes les lignes existent déjà. Aucun doublon n’a été ajouté.');setBusy(false);if(!await confirmAction(`${unique.length} nouvelle(s) opération(s) seront importée(s). ${rows.length-unique.length} doublon(s) ont été ignoré(s).`,'Confirmer l’import'))return;
-    if(!navigator.onLine){for(const row of unique)await queueOfflineInsert(row);toast(`${unique.length} opération(s) importée(s) hors ligne.`,'warning');return}
-    setBusy(true,'Importation dans Supabase...');let result=await db.from('operation').upsert(unique,{onConflict:'offline_uuid'});if(result.error&&/offline_uuid|schema cache/i.test(result.error.message||'')){const legacy=unique.map(row=>{const copy={...row};delete copy.offline_uuid;return copy});result=await db.from('operation').insert(legacy)}
-    if(result.error){if(isNetworkError(result.error)){for(const row of unique)await queueOfflineInsert(row);toast(`${unique.length} opération(s) gardée(s) hors ligne.`,'warning');return}throw result.error}
-    await loadOperations();toast(`${unique.length} opération(s) importée(s).`)
+    setBusy(true,'Importation dans Supabase...');const {error}=await db.from('operation').insert(unique);if(error)throw error;await loadOperations();toast(`${unique.length} opération(s) importée(s).`)
   }catch(error){toast(`Import impossible : ${error.message}`,'error')}finally{setBusy(false);event.target.value=''}
 }
 
-async function invokeAdmin(body){
-  if(!navigator.onLine)throw new Error('Cette action d’administration nécessite une connexion Internet.');
-  const {data,error}=await db.functions.invoke('manage-client',{body});if(error){let message=error.message||'Erreur de la fonction manage-client.';try{if(error.context){const json=await error.context.json();message=json.error||json.message||message}}catch{}if(/Failed to send|FunctionsFetchError|not found/i.test(message))message='La fonction Supabase « manage-client » est absente ou non déployée.';throw new Error(message)}if(data?.error)throw new Error(data.error);return data;
-}
+async function invokeAdmin(body){const {data,error}=await db.functions.invoke('manage-client',{body});if(error){let message=error.message||'Erreur de la fonction manage-client.';try{if(error.context){const json=await error.context.json();message=json.error||json.message||message}}catch{}if(/Failed to send|FunctionsFetchError|not found/i.test(message))message='La fonction Supabase « manage-client » est absente ou non déployée. Consultez INSTALLATION_V12.txt.';throw new Error(message)}if(data?.error)throw new Error(data.error);return data}
 function randomString(length=12){const chars='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#';let out='';const values=new Uint32Array(length);crypto.getRandomValues(values);values.forEach(value=>out+=chars[value%chars.length]);return out}
 function generatePassword(){$('newUserPassword').value=randomString(12)}function generateAddUserPassword(){$('addUserPassword').value=randomString(12)}
 function generateLicence(){const code=$('newClientCode').value||'CLIENT';$('newLicenceKey').value=`CP-${code}-${crypto.randomUUID().slice(0,8).toUpperCase()}`}
@@ -779,17 +502,34 @@ async function addClientUser(){
   setMessage('addUserMessage','Création de l’utilisateur...','info');try{setBusy(true,'Création de l’utilisateur...');await invokeAdmin({action:'add_user',client_id:clientId,code_user:code,nom_user:name,role:$('addUserRole').value,password});setMessage('addUserMessage',`Utilisateur créé : ${code}.`,'success');toast('Utilisateur ajouté.');await loadAdminData()}catch(error){setMessage('addUserMessage',error.message,'error');toast(error.message,'error')}finally{setBusy(false)}
 }
 async function loadAdminData(){
-  if(currentProfile?.role!=='superadmin')return;if(!navigator.onLine)return toast('L’administration n’est pas disponible hors ligne.','warning');
-  const [clientsResult,profilesResult,licencesResult]=await Promise.all([db.from('clients').select('*').order('created_at',{ascending:false}),db.from('profiles').select('id,client_id,code_user,nom,role,statut,created_at').order('created_at',{ascending:false}),db.from('licence').select('*').order('created_at',{ascending:false})]);
+  if(currentProfile?.role!=='superadmin')return;const [clientsResult,profilesResult,licencesResult]=await Promise.all([db.from('clients').select('*').order('created_at',{ascending:false}),db.from('profiles').select('id,client_id,code_user,nom,role,statut,created_at').order('created_at',{ascending:false}),db.from('licence').select('*').order('created_at',{ascending:false})]);
   const error=clientsResult.error||profilesResult.error||licencesResult.error;if(error)return toast(`Administration non chargée : ${error.message}`,'error');adminClients=clientsResult.data||[];adminProfiles=profilesResult.data||[];adminLicences=licencesResult.data||[];renderAdmin();
 }
 function statusBadge(status){return`<span class="status-badge status-${esc(status)}">${esc(status)}</span>`}
 function renderAdmin(){
   const active=adminClients.filter(client=>client.statut==='active').length,expiredCount=adminLicences.filter(lic=>expired(lic.date_fin)||lic.statut==='expired').length;$('statClients').textContent=adminClients.length;$('statActiveClients').textContent=active;$('statUsers').textContent=adminProfiles.length;$('statExpired').textContent=expiredCount;$('addUserClient').innerHTML=adminClients.filter(client=>client.statut==='active').map(client=>`<option value="${client.id}">${esc(client.code_client)} — ${esc(client.nom)}</option>`).join('');
   const clientTerm=normalizeCode($('clientSearch')?.value),visibleClients=adminClients.filter(client=>!clientTerm||normalizeCode(`${client.code_client} ${client.nom}`).includes(clientTerm));
-  $('clientsBody').innerHTML=visibleClients.map(client=>{const licence=adminLicences.find(item=>item.client_id===client.id),users=adminProfiles.filter(profile=>profile.client_id===client.id).length;return`<tr><td><strong>${esc(client.code_client)}</strong></td><td>${esc(client.nom)}</td><td>${statusBadge(client.statut)}</td><td class="ref-cell" title="${esc(licence?.cle_licence||'')}">${esc(licence?.cle_licence||'—')}</td><td><input class="admin-table-input" type="date" id="licDate_${licence?.id||0}" value="${licence?.date_fin||''}"></td><td>${users}</td><td><div class="action-cell"><button class="btn ${client.statut==='active'?'btn-danger':'btn-success'} btn-xs" onclick="setClientStatus('${client.id}','${client.statut==='active'?'blocked':'active'}')">${client.statut==='active'?'Bloquer':'Activer'}</button>${licence?`<button class="btn btn-primary btn-xs" onclick="saveLicence(${licence.id},'${licence.statut}')">Sauver</button><button class="btn ${licence.statut==='active'?'btn-warning':'btn-success'} btn-xs" onclick="toggleLicence(${licence.id},'${licence.statut==='active'?'blocked':'active'}')">${licence.statut==='active'?'Suspendre licence':'Activer licence'}</button>`:''}</div></td></tr>`}).join('');$('clientsEmpty').classList.toggle('hidden',visibleClients.length>0);$('clientsBody').closest('table').classList.toggle('hidden',visibleClients.length===0);
+  $('clientsBody').innerHTML=visibleClients.map(client=>{const licence=adminLicences.find(item=>item.client_id===client.id),users=adminProfiles.filter(profile=>profile.client_id===client.id).length;return`<tr><td><strong>${esc(client.code_client)}</strong></td><td>${esc(client.nom)}</td><td>${statusBadge(client.statut)}</td><td class="ref-cell" title="${esc(licence?.cle_licence||'')}">${esc(licence?.cle_licence||'—')}</td><td><input class="admin-table-input" type="date" id="licDate_${licence?.id||0}" value="${licence?.date_fin||''}"></td><td>${users}</td><td><div class="action-cell"><button class="btn btn-primary btn-xs" onclick="openEditClient('${client.id}')" title="Modifier le client"><i data-lucide="pencil"></i> Modifier</button><button class="btn ${client.statut==='active'?'btn-warning':'btn-success'} btn-xs" onclick="setClientStatus('${client.id}','${client.statut==='active'?'blocked':'active'}')">${client.statut==='active'?'Bloquer':'Activer'}</button>${licence?`<button class="btn ${licence.statut==='active'?'btn-warning':'btn-success'} btn-xs" onclick="toggleLicence(${licence.id},'${licence.statut==='active'?'blocked':'active'}')">${licence.statut==='active'?'Suspendre licence':'Activer licence'}</button>`:''}<button class="btn btn-danger btn-xs" onclick="deleteClient('${client.id}')" title="Supprimer définitivement"><i data-lucide="trash-2"></i> Supprimer</button></div></td></tr>`}).join('');$('clientsEmpty').classList.toggle('hidden',visibleClients.length>0);$('clientsBody').closest('table').classList.toggle('hidden',visibleClients.length===0);
   const userTerm=normalizeCode($('userSearch')?.value),visibleUsers=adminProfiles.filter(profile=>{const client=adminClients.find(item=>item.id===profile.client_id);return!userTerm||normalizeCode(`${profile.code_user} ${profile.nom||''} ${client?.nom||''}`).includes(userTerm)});
   $('usersBody').innerHTML=visibleUsers.map(profile=>{const client=adminClients.find(item=>item.id===profile.client_id);return`<tr><td><strong>${esc(profile.code_user)}</strong></td><td>${esc(profile.nom||'—')}</td><td>${esc(client?.nom||'—')}</td><td><span class="role-badge">${esc(profile.role)}</span></td><td>${statusBadge(profile.statut)}</td><td>${profile.role==='superadmin'?'—':`<div class="action-cell"><button class="btn ${profile.statut==='active'?'btn-danger':'btn-success'} btn-xs" onclick="setUserStatus('${profile.id}','${profile.statut==='active'?'blocked':'active'}')">${profile.statut==='active'?'Bloquer':'Activer'}</button><button class="btn btn-warning btn-xs" onclick="resetUserPassword('${profile.id}','${esc(profile.code_user)}')">Mot de passe</button></div>`}</td></tr>`}).join('');$('usersEmpty').classList.toggle('hidden',visibleUsers.length>0);$('usersBody').closest('table').classList.toggle('hidden',visibleUsers.length===0);refreshIcons();
+}
+
+function openEditClient(id){
+  const client=adminClients.find(item=>String(item.id)===String(id));if(!client)return toast('Client introuvable.','error');
+  const licence=adminLicences.find(item=>String(item.client_id)===String(client.id));
+  $('editClientId').value=client.id;$('editLicenceId').value=licence?.id||'';$('editClientName').value=client.nom||'';$('editClientCode').value=client.code_client||'';$('editClientStatus').value=client.statut==='blocked'?'blocked':'active';$('editLicenceKey').value=licence?.cle_licence||'';$('editLicenceEnd').value=licence?.date_fin||'';$('editLicenceStatus').value=['active','blocked','expired','inactive'].includes(licence?.statut)?licence.statut:'active';setMessage('editClientMessage','','info');$('editClientModal').classList.add('open');refreshIcons();
+}
+function closeEditClient(){$('editClientModal').classList.remove('open');setMessage('editClientMessage','','info')}
+async function saveClientChanges(){
+  const clientId=$('editClientId').value,name=$('editClientName').value.trim(),code=$('editClientCode').value.trim().toUpperCase(),licenceKey=$('editLicenceKey').value.trim().toUpperCase();
+  if(name.length<2)return setMessage('editClientMessage','Nom du client obligatoire.','error');if(!/^[A-Z0-9_-]{3,30}$/.test(code))return setMessage('editClientMessage','Code client invalide.','error');if(!/^[A-Z0-9_-]{6,100}$/.test(licenceKey))return setMessage('editClientMessage','Clé licence invalide.','error');
+  try{setBusy(true,'Modification du client...');await invokeAdmin({action:'update_client',client_id:clientId,nom_client:name,code_client:code,statut:$('editClientStatus').value,licence_id:$('editLicenceId').value||null,cle_licence:licenceKey,date_fin:$('editLicenceEnd').value||null,licence_statut:$('editLicenceStatus').value});await loadAdminData();closeEditClient();toast('Client et licence modifiés avec succès.')}catch(error){setMessage('editClientMessage',error.message,'error');toast(error.message,'error')}finally{setBusy(false)}
+}
+async function deleteClient(id){
+  const client=adminClients.find(item=>String(item.id)===String(id));if(!client)return toast('Client introuvable.','error');const users=adminProfiles.filter(profile=>String(profile.client_id)===String(client.id)).length;
+  const accepted=await confirmAction(`La suppression de « ${client.nom} » effacera définitivement ses ${users} utilisateur(s), sa licence, ses opérations et sa trésorerie. Cette action est irréversible.`,'Supprimer définitivement le client ?');if(!accepted)return;
+  const code=window.prompt(`Pour confirmer, saisissez exactement le code client : ${client.code_client}`);if(code===null)return;if(String(code).trim().toUpperCase()!==String(client.code_client).toUpperCase())return toast('Code de confirmation incorrect. Suppression annulée.','warning');
+  try{setBusy(true,'Suppression complète du client...');const result=await invokeAdmin({action:'delete_client',client_id:id,confirmation_code:code});await loadAdminData();toast(`${client.nom} supprimé définitivement (${result.deleted_users||users} utilisateur(s)).`,'success')}catch(error){toast(error.message,'error')}finally{setBusy(false)}
 }
 async function setClientStatus(id,status){if(!await confirmAction(`${status==='blocked'?'Bloquer':'Activer'} ce client et son accès à la caisse ?`,'Modifier le statut du client'))return;try{setBusy(true,'Mise à jour du client...');await invokeAdmin({action:'update_client_status',client_id:id,statut:status});await loadAdminData();toast('Statut du client mis à jour.')}catch(error){toast(error.message,'error')}finally{setBusy(false)}}
 async function setUserStatus(id,status){if(!await confirmAction(`${status==='blocked'?'Bloquer':'Activer'} cet utilisateur ?`,'Modifier le compte utilisateur'))return;try{setBusy(true,'Mise à jour du compte...');await invokeAdmin({action:'update_user_status',user_id:id,statut:status});await loadAdminData();toast('Statut utilisateur mis à jour.')}catch(error){toast(error.message,'error')}finally{setBusy(false)}}
@@ -799,8 +539,8 @@ async function resetUserPassword(id,code){const password=window.prompt(`Nouveau 
 
 window.addEventListener('DOMContentLoaded',()=>{
   const end=new Date();end.setFullYear(end.getFullYear()+1);$('newLicenceEnd').value=new Date(end.getTime()-end.getTimezoneOffset()*60000).toISOString().slice(0,10);$('sharedAppLink').value=location.href.split('?')[0].split('#')[0];$('dateFilter').value=localDate();
-  $('confirmCancel').addEventListener('click',()=>closeConfirm(false));$('confirmAccept').addEventListener('click',()=>closeConfirm(true));$('confirmModal').addEventListener('click',event=>{if(event.target===$('confirmModal'))closeConfirm(false)});
-  ['loginCode','loginPassword','loginLicence'].forEach(id=>$(id).addEventListener('keydown',event=>{if(event.key==='Enter')login()}));window.addEventListener('online',updateOnlineStatus);window.addEventListener('offline',updateOnlineStatus);window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();pwaInstallPrompt=event;toggleInstallButtons(true)});window.addEventListener('appinstalled',()=>{pwaInstallPrompt=null;toggleInstallButtons(false);toast('Caisse Pro est installée sur cet appareil.')});registerServiceWorker();updateOnlineStatus();refreshIcons();restoreSession();
+  $('confirmCancel').addEventListener('click',()=>closeConfirm(false));$('confirmAccept').addEventListener('click',()=>closeConfirm(true));$('confirmModal').addEventListener('click',event=>{if(event.target===$('confirmModal'))closeConfirm(false)});$('editClientModal').addEventListener('click',event=>{if(event.target===$('editClientModal'))closeEditClient()});
+  ['loginCode','loginPassword','loginLicence'].forEach(id=>$(id).addEventListener('keydown',event=>{if(event.key==='Enter')login()}));window.addEventListener('online',updateOnlineStatus);window.addEventListener('offline',updateOnlineStatus);updateOnlineStatus();refreshIcons();restoreSession();
 });
 </script>
 </body>
