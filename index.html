@@ -2,646 +2,499 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Caisse Pro Dashboard</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#07111f">
+<title>Caisse Pro V12.1 — Multi-clients</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
 <script>
 const SUPABASE_URL = "https://qmkvyuimxnnmsexxchun.supabase.co";
-
 const SUPABASE_KEY = "sb_publishable_O_WzsuqcNb-laFphCV8jqQ_gNv8nbUr";
-
-const supabase = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 </script>
-
 <style>
-body{margin:0;font-family:Arial;background:#0f172a;color:#fff}
-
-.login{width:320px;margin:120px auto;background:#1e293b;padding:25px;border-radius:12px;text-align:center}
-.login input{width:90%;padding:10px;margin:8px 0;border-radius:6px;border:none}
-
-.container{display:none}
-
-.sidebar{width:240px;height:100vh;position:fixed;left:0;top:0;background:#111827;padding:15px;overflow:auto}
-
-.tab-btn{width:100%;padding:10px;margin:8px 0;border:none;border-radius:8px;color:#fff;font-weight:bold;cursor:pointer}
-.orange{background:#f97316}
-.yas{background:#22c55e}
-.airtel{background:#ef4444}
-.miaro{
-    background:#6366f1;   /* Violet */
+:root{
+  --bg:#07111f;--bg-soft:#0b1728;--panel:#101f33;--panel-2:#14263d;--panel-3:#182d47;
+  --text:#f8fafc;--muted:#93a4ba;--line:rgba(148,163,184,.16);--line-strong:rgba(148,163,184,.28);
+  --primary:#3b82f6;--primary-2:#2563eb;--success:#10b981;--warning:#f59e0b;--danger:#ef4444;--purple:#8b5cf6;
+  --shadow:0 20px 55px rgba(0,0,0,.30);--radius:18px;--radius-sm:12px;--sidebar:284px;
 }
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-height:100vh;font-family:Inter,Arial,sans-serif;background:radial-gradient(circle at 10% 10%,rgba(37,99,235,.17),transparent 26%),radial-gradient(circle at 85% 75%,rgba(14,165,233,.10),transparent 28%),var(--bg);color:var(--text)}
+button,input,select{font:inherit}
+button{border:0;cursor:pointer}
+button:disabled{cursor:not-allowed;opacity:.55}
+input,select{width:100%;height:46px;padding:0 13px;border:1px solid var(--line);border-radius:11px;background:#0b1728;color:var(--text);outline:none;transition:.2s}
+input::placeholder{color:#60728b}
+input:focus,select:focus{border-color:rgba(59,130,246,.8);box-shadow:0 0 0 4px rgba(59,130,246,.12)}
+input[readonly]{background:#0a1422;color:#b9c7d9}
+input[type="date"]{color-scheme:dark}
+.hidden{display:none!important}
+.muted{color:var(--muted)}
 
-.fitia{
-    background:#06b6d4;   /* Bleu turquoise */
-}
+/* Login */
+.auth-shell{min-height:100vh;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(420px,.95fr);padding:28px}
+.auth-visual{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:28px;background:linear-gradient(145deg,rgba(37,99,235,.88),rgba(15,23,42,.96) 62%,rgba(14,165,233,.75));padding:54px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:var(--shadow)}
+.auth-visual:before,.auth-visual:after{content:"";position:absolute;border-radius:50%;filter:blur(2px)}
+.auth-visual:before{width:360px;height:360px;background:rgba(255,255,255,.08);right:-120px;top:-90px}
+.auth-visual:after{width:240px;height:240px;background:rgba(16,185,129,.12);left:-70px;bottom:-80px}
+.brand-mark{position:relative;z-index:2;display:flex;align-items:center;gap:13px;font-weight:800;font-size:22px}
+.brand-logo{width:46px;height:46px;display:grid;place-items:center;border-radius:14px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.20);backdrop-filter:blur(8px)}
+.auth-copy{position:relative;z-index:2;max-width:680px}
+.auth-copy h1{font-size:clamp(38px,5vw,66px);letter-spacing:-.045em;line-height:1.04;margin:0 0 20px}
+.auth-copy p{font-size:17px;line-height:1.8;color:#dbeafe;max-width:590px}
+.feature-list{position:relative;z-index:2;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:32px}
+.feature-item{padding:15px;border:1px solid rgba(255,255,255,.16);border-radius:15px;background:rgba(8,20,38,.25);backdrop-filter:blur(8px)}
+.feature-item i{width:20px;margin-bottom:8px}.feature-item strong{display:block;font-size:13px}.feature-item span{display:block;color:#c9dcf6;font-size:11px;margin-top:5px;line-height:1.45}
+.auth-panel{display:flex;align-items:center;justify-content:center;padding:32px}
+.login-card{width:min(450px,100%);padding:34px;border:1px solid var(--line);border-radius:24px;background:rgba(16,31,51,.88);backdrop-filter:blur(16px);box-shadow:var(--shadow)}
+.login-head{margin-bottom:28px}.login-head .eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#60a5fa;font-weight:800}.login-head h2{font-size:30px;margin:8px 0 8px}.login-head p{color:var(--muted);font-size:14px;line-height:1.55;margin:0}
+.form-field{margin-bottom:15px}.form-field label{display:block;font-size:12px;color:#cbd5e1;font-weight:700;margin-bottom:7px}.input-wrap{position:relative}.input-wrap>i{position:absolute;left:13px;top:13px;width:19px;color:#6f84a0}.input-wrap input{padding-left:43px}.password-toggle{position:absolute;right:7px;top:7px;width:32px;height:32px;border-radius:8px;background:transparent;color:#7f91a8;display:grid;place-items:center}.password-toggle:hover{background:rgba(148,163,184,.10);color:#fff}
+.login-submit{width:100%;height:48px;margin-top:4px;border-radius:12px;background:linear-gradient(135deg,var(--primary),#1d4ed8);color:#fff;font-weight:800;box-shadow:0 12px 26px rgba(37,99,235,.28);transition:.2s}.login-submit:hover{transform:translateY(-1px);filter:brightness(1.06)}
+.message{min-height:20px;margin-top:12px;font-size:12px;line-height:1.5}.message.success{color:#86efac}.message.error{color:#fca5a5}.message.info{color:#93c5fd}
+.auth-footer{margin-top:22px;text-align:center;color:#60728b;font-size:11px}
 
-.stephanie{
-    background:#e11d48;   /* Rose foncé */
-}
+/* App shell */
+.app{display:none;min-height:100vh}
+.sidebar{position:fixed;inset:0 auto 0 0;width:var(--sidebar);background:rgba(7,17,31,.96);border-right:1px solid var(--line);padding:20px 15px;overflow-y:auto;z-index:40;backdrop-filter:blur(18px)}
+.sidebar-brand{display:flex;align-items:center;gap:12px;padding:4px 10px 20px}.sidebar-brand .brand-logo{width:43px;height:43px}.sidebar-brand strong{display:block;font-size:17px}.sidebar-brand span{display:block;color:#64748b;font-size:10px;margin-top:3px;letter-spacing:.09em;text-transform:uppercase}
+.sidebar-section{margin:15px 0}.sidebar-label{padding:0 11px;margin-bottom:7px;color:#60728b;font-size:10px;text-transform:uppercase;letter-spacing:.13em;font-weight:800}
+.nav-btn,.operator-btn{width:100%;display:flex;align-items:center;gap:11px;padding:11px 12px;margin:4px 0;border-radius:11px;background:transparent;color:#9fb0c6;text-align:left;font-weight:650;font-size:13px;transition:.18s}.nav-btn:hover,.operator-btn:hover{background:rgba(148,163,184,.08);color:#fff}.nav-btn.active{background:linear-gradient(135deg,rgba(59,130,246,.22),rgba(37,99,235,.10));color:#bfdbfe;border:1px solid rgba(59,130,246,.18)}.nav-btn i,.operator-btn i{width:18px}.admin-nav{display:none}.operator-dot{width:9px;height:9px;border-radius:50%;box-shadow:0 0 0 4px color-mix(in srgb,var(--op-color),transparent 84%);background:var(--op-color)}.operator-btn.active{background:rgba(255,255,255,.06);color:#fff;border:1px solid var(--line)}
+.sidebar-spacer{height:8px}.user-card{margin-top:18px;padding:14px;border-radius:15px;background:linear-gradient(145deg,rgba(20,38,61,.95),rgba(10,23,40,.95));border:1px solid var(--line)}.user-top{display:flex;align-items:center;gap:10px}.avatar{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,#3b82f6,#8b5cf6);font-weight:800}.user-meta{min-width:0}.user-meta strong,.user-meta span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.user-meta strong{font-size:12px}.user-meta span{font-size:10px;color:#7f91a8;margin-top:3px}.licence-mini{margin-top:11px;padding-top:10px;border-top:1px solid var(--line);font-size:10px;color:#8092a8;line-height:1.5}.logout-btn{width:100%;height:36px;margin-top:10px;border-radius:9px;background:rgba(239,68,68,.11);color:#fda4af;font-weight:700;font-size:11px}.logout-btn:hover{background:rgba(239,68,68,.18)}
+.main{margin-left:var(--sidebar);min-height:100vh;padding:20px 24px 36px}.view{display:none}.view.active{display:block}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}.topbar-left{display:flex;align-items:center;gap:12px}.mobile-menu{display:none;width:42px;height:42px;border-radius:11px;background:var(--panel);color:#fff;border:1px solid var(--line)}.page-title h1{font-size:24px;letter-spacing:-.025em;margin:0}.page-title p{font-size:11px;color:#71839b;margin:5px 0 0}.topbar-actions{display:flex;align-items:center;gap:9px}.date-control{display:flex;align-items:center;gap:9px;padding:0 12px;height:43px;border:1px solid var(--line);border-radius:11px;background:var(--panel)}.date-control i{width:17px;color:#7f91a8}.date-control input{border:0;background:transparent;height:40px;padding:0;width:142px;box-shadow:none}.online-badge{height:38px;display:flex;align-items:center;gap:7px;padding:0 11px;border-radius:999px;background:rgba(16,185,129,.10);color:#6ee7b7;border:1px solid rgba(16,185,129,.18);font-size:10px;font-weight:800}.online-badge.offline{background:rgba(245,158,11,.10);color:#fcd34d;border-color:rgba(245,158,11,.18)}.online-dot{width:7px;height:7px;border-radius:50%;background:currentColor}
 
-.date-box{margin-top:20px;background:#0b1220;padding:15px;border-radius:12px}
+/* Components */
+.surface{background:linear-gradient(145deg,rgba(16,31,51,.98),rgba(12,25,42,.98));border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 12px 36px rgba(0,0,0,.17)}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:16px}.kpi-card{position:relative;overflow:hidden;padding:17px}.kpi-card:after{content:"";position:absolute;right:-24px;top:-28px;width:96px;height:96px;border-radius:50%;background:var(--kpi-glow);filter:blur(2px)}.kpi-head{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between}.kpi-label{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#8496ad;font-weight:800}.kpi-icon{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--kpi-soft);color:var(--kpi-color)}.kpi-icon i{width:17px}.kpi-value{position:relative;z-index:1;font-size:24px;font-weight:800;letter-spacing:-.025em;margin-top:12px}.kpi-note{position:relative;z-index:1;font-size:10px;color:#657890;margin-top:5px}
+.workspace-grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:15px}.workspace-main{min-width:0}.side-stack{display:flex;flex-direction:column;gap:15px}
+.panel{padding:18px}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:15px}.panel-title{display:flex;align-items:center;gap:9px}.panel-title i{width:18px;color:#60a5fa}.panel-title h2,.panel-title h3{margin:0;font-size:15px}.panel-title span{display:block;font-size:10px;color:#6c8099;margin-top:3px}.panel-tools{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.btn{height:39px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 13px;border-radius:10px;color:#fff;font-size:11px;font-weight:800;transition:.18s;white-space:nowrap}.btn:hover{transform:translateY(-1px);filter:brightness(1.06)}.btn i{width:16px}.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-2));box-shadow:0 8px 18px rgba(37,99,235,.20)}.btn-success{background:linear-gradient(135deg,#10b981,#059669)}.btn-warning{background:linear-gradient(135deg,#f59e0b,#d97706)}.btn-danger{background:linear-gradient(135deg,#ef4444,#dc2626)}.btn-purple{background:linear-gradient(135deg,#8b5cf6,#7c3aed)}.btn-ghost{background:rgba(148,163,184,.07);border:1px solid var(--line);color:#b9c7d9}.btn-ghost:hover{background:rgba(148,163,184,.12);color:#fff}.btn-icon{width:36px;height:36px;padding:0}.btn-xs{height:31px;padding:0 9px;border-radius:8px;font-size:10px}
+.operator-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding:16px 18px}.operator-symbol{width:45px;height:45px;border-radius:14px;display:grid;place-items:center;background:color-mix(in srgb,var(--operator-color),transparent 84%);color:var(--operator-color);border:1px solid color-mix(in srgb,var(--operator-color),transparent 70%)}.operator-symbol i{width:21px}.operator-name strong{display:block;font-size:17px}.operator-name span{display:block;font-size:10px;color:#71839b;margin-top:4px}.operator-header .operator-badge{margin-left:auto;padding:6px 10px;border-radius:999px;background:color-mix(in srgb,var(--operator-color),transparent 87%);color:var(--operator-color);font-size:9px;font-weight:800;border:1px solid color-mix(in srgb,var(--operator-color),transparent 72%)}
+.form-panel{display:none;margin-bottom:15px}.form-panel.open{display:block;animation:slideDown .18s ease}@keyframes slideDown{from{opacity:0;transform:translateY(-7px)}to{opacity:1;transform:none}}.form-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.field label{display:flex;align-items:center;justify-content:space-between;font-size:10px;color:#9aacbf;font-weight:800;text-transform:uppercase;letter-spacing:.055em;margin-bottom:7px}.field label small{font-weight:600;color:#60728b;text-transform:none;letter-spacing:0}.field input{height:43px}.final-field input{font-weight:800;color:#86efac;border-color:rgba(16,185,129,.20);background:rgba(16,185,129,.06)}.form-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:15px;padding-top:14px;border-top:1px solid var(--line)}
+.search-wrap{position:relative;min-width:230px}.search-wrap i{position:absolute;left:11px;top:10px;width:16px;color:#60728b}.search-wrap input{height:36px;padding-left:34px;font-size:11px;background:#0a1626}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:13px}.data-table{width:100%;border-collapse:collapse;min-width:920px}.data-table th{position:sticky;top:0;z-index:1;padding:11px 12px;text-align:left;background:#0a1626;color:#71839b;font-size:9px;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--line);white-space:nowrap}.data-table td{padding:11px 12px;border-bottom:1px solid rgba(148,163,184,.09);font-size:11px;color:#c9d5e4;white-space:nowrap}.data-table tbody tr{transition:.15s}.data-table tbody tr:hover{background:rgba(59,130,246,.045)}.data-table tbody tr:last-child td{border-bottom:0}.number-cell{font-variant-numeric:tabular-nums;font-weight:650}.positive{color:#6ee7b7!important}.negative{color:#fda4af!important}.ref-cell{max-width:160px;overflow:hidden;text-overflow:ellipsis}.action-cell{display:flex;gap:5px}.empty-state{padding:44px 18px;text-align:center;color:#60728b}.empty-state i{width:35px;height:35px;margin-bottom:9px}.empty-state strong{display:block;color:#8fa2b9;font-size:12px}.empty-state span{display:block;font-size:10px;margin-top:5px}.table-footer{display:flex;justify-content:space-between;gap:12px;align-items:center;padding-top:12px;color:#6f829a;font-size:10px}.table-totals{display:flex;gap:15px;flex-wrap:wrap}.table-totals strong{color:#c9d5e4}
+.extra-card{padding:18px}.extra-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}.extra-field label{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#71839b;margin-bottom:7px;font-weight:800}.extra-field input{height:43px}.save-state{display:flex;align-items:center;gap:6px;font-size:9px;color:#64748b;margin-top:10px}.save-state .dot{width:6px;height:6px;border-radius:50%;background:#64748b}.save-state.saving{color:#fcd34d}.save-state.saving .dot{background:#f59e0b}.save-state.saved{color:#6ee7b7}.save-state.saved .dot{background:#10b981}.side-total{padding:20px;background:linear-gradient(145deg,rgba(37,99,235,.18),rgba(13,29,49,.95));border-color:rgba(59,130,246,.24)}.side-total .label{font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:#93c5fd;font-weight:800}.side-total .value{font-size:27px;font-weight:800;margin-top:9px;letter-spacing:-.03em}.side-total .hint{font-size:9px;color:#6580a0;margin-top:6px}
+.quick-info{padding:17px}.info-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:10px}.info-row:last-child{border-bottom:0}.info-row span{color:#73869e}.info-row strong{text-align:right;color:#ccd8e6}
 
-.main{margin-left:260px;padding:20px}
+/* Admin */
+.admin-hero{padding:20px;margin-bottom:15px;display:flex;align-items:center;justify-content:space-between;gap:20px;background:linear-gradient(135deg,rgba(124,58,237,.20),rgba(16,31,51,.96))}.admin-hero h2{margin:0;font-size:20px}.admin-hero p{margin:6px 0 0;color:#8fa2b9;font-size:11px}.admin-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:15px}.admin-stat{padding:17px}.admin-stat span{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#7a8da5}.admin-stat strong{display:block;font-size:26px;margin-top:8px}.admin-tabs{display:flex;gap:7px;margin-bottom:15px;padding:6px;width:max-content;max-width:100%;overflow:auto;border-radius:13px;background:#091524;border:1px solid var(--line)}.admin-tab{height:36px;padding:0 13px;border-radius:9px;background:transparent;color:#7f91a8;font-weight:750;font-size:10px;white-space:nowrap}.admin-tab.active{background:linear-gradient(135deg,rgba(139,92,246,.25),rgba(124,58,237,.14));color:#ddd6fe}.admin-section{display:none}.admin-section.active{display:block}.admin-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:15px}.admin-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.credential-card{display:none;margin-top:15px;padding:15px;border-radius:13px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.20);white-space:pre-line;line-height:1.7;color:#bbf7d0;font-size:11px}.status-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 8px;border-radius:999px;font-size:9px;font-weight:800;text-transform:capitalize}.status-badge:before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}.status-active{color:#6ee7b7;background:rgba(16,185,129,.10)}.status-blocked,.status-expired{color:#fda4af;background:rgba(239,68,68,.10)}.role-badge{display:inline-flex;padding:5px 8px;border-radius:8px;color:#c4b5fd;background:rgba(139,92,246,.11);font-size:9px;font-weight:800}.admin-search{margin-left:auto}.admin-table-input{height:34px!important;min-width:140px;padding:0 8px!important;font-size:10px!important}
 
-.card{background:#1e293b;padding:15px;border-radius:12px;margin-bottom:15px}
+/* Toast, modal, loader */
+.toast-region{position:fixed;right:18px;bottom:18px;z-index:100;display:flex;flex-direction:column;gap:9px;pointer-events:none}.toast{width:min(370px,calc(100vw - 36px));display:flex;gap:10px;padding:13px 14px;border-radius:13px;background:#12243a;border:1px solid var(--line-strong);box-shadow:var(--shadow);animation:toastIn .22s ease;pointer-events:auto}.toast i{width:18px;flex:none}.toast strong{display:block;font-size:11px}.toast span{display:block;margin-top:3px;color:#8fa2b9;font-size:10px;line-height:1.45}.toast.success i{color:#34d399}.toast.error i{color:#fb7185}.toast.warning i{color:#fbbf24}.toast.info i{color:#60a5fa}@keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.modal-backdrop{position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(2,6,23,.72);backdrop-filter:blur(6px)}.modal-backdrop.open{display:flex}.modal{width:min(460px,100%);padding:22px;border-radius:20px;background:#102035;border:1px solid var(--line-strong);box-shadow:var(--shadow)}.modal-icon{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:rgba(245,158,11,.10);color:#fbbf24}.modal h3{margin:15px 0 7px;font-size:18px}.modal p{margin:0;color:#8fa2b9;font-size:11px;line-height:1.65}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
+.loader-overlay{position:fixed;inset:0;z-index:120;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,.54);backdrop-filter:blur(4px)}.loader-overlay.open{display:flex}.loader-card{display:flex;align-items:center;gap:12px;padding:15px 18px;border-radius:14px;background:#102035;border:1px solid var(--line);box-shadow:var(--shadow);font-size:11px;color:#cbd5e1}.spinner{width:20px;height:20px;border:2px solid rgba(255,255,255,.16);border-top-color:#60a5fa;border-radius:50%;animation:spin .7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+.sidebar-backdrop{display:none}
 
-.row{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:15px;
-    margin-top:15px;
-}
-
-.field{
-    display:flex;
-    flex-direction:column;
-}
-
-.field label{
-    color:#fff;
-    font-size:15px;
-    font-weight:bold;
-    margin-bottom:6px;
-    padding-left:3px;
-}
-
-.field input{
-    width:100%;
-    padding:12px;
-    border:none;
-    border-radius:8px;
-    background:#fff;
-    color:#111827;
-    font-size:15px;
-    box-sizing:border-box;
-}
-
-.field input:focus{
-    outline:none;
-    box-shadow:0 0 0 2px #3b82f6;
-}
-
-.field input[readonly]{
-    background:#e5e7eb;
-    font-weight:bold;
-}
-
-button{cursor:pointer;border:none;padding:10px;border-radius:8px;font-weight:bold;color:white}
-.save{background:#3b82f6}
-.update{background:#f59e0b}
-.del{background:#ef4444}
-
-table{width:100%;border-collapse:collapse}
-th{background:#0b1220;padding:10px}
-td{background:#1e293b;padding:8px;text-align:center}
-
-#opTitle{font-size:30px;font-weight:900;text-align:center;padding:12px;background:#0b1220;border-radius:10px;margin-bottom:10px}
-
-.box{background:#111827;padding:12px;border-radius:10px;text-align:center;margin-top:10px;font-weight:bold}
-.box div{margin-bottom:6px}
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
-body{font-family:Inter,Arial,sans-serif;background:linear-gradient(135deg,#0f172a,#1e3a8a)!important}
-.sidebar{box-shadow:4px 0 20px rgba(0,0,0,.35)}
-.card,.box,.login{box-shadow:0 10px 30px rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08)}
-button{transition:.25s ease}
-button:hover{transform:translateY(-2px);filter:brightness(1.08)}
-table{overflow:hidden;border-radius:12px}
-th{position:sticky;top:0}
-tr:hover td{background:#273449}
-#opTitle{background:linear-gradient(90deg,#2563eb,#1d4ed8)}
+@media(max-width:1180px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.workspace-grid{grid-template-columns:1fr}.side-stack{display:grid;grid-template-columns:repeat(3,1fr)}.admin-grid{grid-template-columns:1fr}}
+@media(max-width:900px){:root{--sidebar:260px}.form-grid{grid-template-columns:repeat(2,1fr)}.admin-stats{grid-template-columns:repeat(2,1fr)}.auth-shell{grid-template-columns:1fr;padding:16px}.auth-visual{display:none}.auth-panel{padding:20px}.main{padding:16px}}
+@media(max-width:760px){.sidebar{transform:translateX(-105%);transition:.22s}.sidebar.open{transform:none}.sidebar-backdrop{position:fixed;inset:0;z-index:35;background:rgba(2,6,23,.65)}.sidebar-backdrop.open{display:block}.main{margin-left:0}.mobile-menu{display:grid;place-items:center}.topbar{align-items:flex-start}.topbar-actions{flex-wrap:wrap;justify-content:flex-end}.online-badge{display:none}.page-title h1{font-size:19px}.kpi-grid{grid-template-columns:1fr 1fr}.side-stack{grid-template-columns:1fr}.admin-form-grid{grid-template-columns:1fr}}
+@media(max-width:520px){.auth-panel{padding:6px}.login-card{padding:25px 20px}.topbar{gap:8px}.topbar-actions{width:100%;justify-content:flex-start}.date-control{flex:1}.date-control input{width:100%}.kpi-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.panel{padding:14px}.panel-head{align-items:flex-start;flex-direction:column}.panel-tools{width:100%}.search-wrap{min-width:0;width:100%}.search-wrap input{width:100%}.admin-stats{grid-template-columns:1fr 1fr}.btn .btn-text-mobile{display:none}}
 </style>
 </head>
-
 <body>
 
-<div class="login" id="loginBox">
-<h2>LOGIN</h2>
-<input id="user" value="admin">
-<input id="pass" type="password" placeholder="Mot de passe">
-<input id="licence" placeholder="Clé licence">
-<button onclick="login()" class="save" style="width:100%">Login</button>
+<section class="auth-shell" id="loginBox">
+  <div class="auth-visual">
+    <div class="brand-mark"><span class="brand-logo"><i data-lucide="landmark"></i></span><span>Caisse Pro</span></div>
+    <div class="auth-copy">
+      <h1>Gérez chaque caisse avec précision.</h1>
+      <p>Une plateforme centralisée, sécurisée et multi-clients pour suivre les opérations, les soldes, les licences et les utilisateurs en temps réel.</p>
+      <div class="feature-list">
+        <div class="feature-item"><i data-lucide="shield-check"></i><strong>Accès sécurisé</strong><span>Authentification et isolation des données par client.</span></div>
+        <div class="feature-item"><i data-lucide="users"></i><strong>Multi-clients</strong><span>Un lien unique et des espaces complètement séparés.</span></div>
+        <div class="feature-item"><i data-lucide="bar-chart-3"></i><strong>Suivi précis</strong><span>Soldes, bonus, frais, espèces et crédits centralisés.</span></div>
+      </div>
+    </div>
+    <div class="muted" style="position:relative;z-index:2;font-size:10px">CAISSE PRO · VERSION 12.1 PROFESSIONNELLE</div>
+  </div>
+
+  <div class="auth-panel">
+    <div class="login-card">
+      <div class="login-head">
+        <span class="eyebrow">Espace sécurisé</span>
+        <h2>Bienvenue</h2>
+        <p>Connectez-vous avec les accès attribués à votre entreprise.</p>
+      </div>
+      <div class="form-field"><label for="loginCode">Code utilisateur</label><div class="input-wrap"><i data-lucide="user-round"></i><input id="loginCode" placeholder="Ex. boutique01" autocomplete="username"></div></div>
+      <div class="form-field"><label for="loginPassword">Mot de passe</label><div class="input-wrap"><i data-lucide="lock-keyhole"></i><input id="loginPassword" type="password" placeholder="Votre mot de passe" autocomplete="current-password"><button class="password-toggle" type="button" onclick="togglePassword('loginPassword',this)" aria-label="Afficher le mot de passe"><i data-lucide="eye"></i></button></div></div>
+      <div class="form-field"><label for="loginLicence">Clé licence</label><div class="input-wrap"><i data-lucide="key-round"></i><input id="loginLicence" placeholder="CP-CLIENT-XXXXXXXX" autocomplete="off"></div></div>
+      <button id="loginButton" class="login-submit" onclick="login()">Se connecter</button>
+      <div id="loginStatus" class="message info"></div>
+      <div class="auth-footer">Vos données sont isolées et protégées par les règles Supabase.</div>
+    </div>
+  </div>
+</section>
+
+<div class="app" id="app">
+  <div id="sidebarBackdrop" class="sidebar-backdrop" onclick="closeSidebar()"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand"><span class="brand-logo"><i data-lucide="landmark"></i></span><div><strong>Caisse Pro</strong><span>V12.1 Multi-clients</span></div></div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Navigation</div>
+      <button id="caisseNav" class="nav-btn active" onclick="showView('caisse')"><i data-lucide="layout-dashboard"></i> Tableau de caisse</button>
+      <button id="adminNav" class="nav-btn admin-nav" onclick="showView('admin')"><i data-lucide="shield-cog"></i> Administration</button>
+    </div>
+
+    <div class="sidebar-section" id="operatorMenu">
+      <div class="sidebar-label">Opérateurs</div>
+      <button class="operator-btn active" data-tab="orange" onclick="setTab('orange')" style="--op-color:#ff7900"><span class="operator-dot"></span> Orange</button>
+      <button class="operator-btn" data-tab="yas" onclick="setTab('yas')" style="--op-color:#22c55e"><span class="operator-dot"></span> Yas</button>
+      <button class="operator-btn" data-tab="airtel" onclick="setTab('airtel')" style="--op-color:#ef4444"><span class="operator-dot"></span> Airtel</button>
+      <button class="operator-btn" data-tab="autre" onclick="setTab('autre')" style="--op-color:#8b5cf6"><span class="operator-dot"></span> Transaction Puce 1</button>
+      <button class="operator-btn" data-tab="autre2" onclick="setTab('autre2')" style="--op-color:#06b6d4"><span class="operator-dot"></span> Transaction Puce 2</button>
+      <button class="operator-btn" data-tab="autre3" onclick="setTab('autre3')" style="--op-color:#e11d48"><span class="operator-dot"></span> Transaction Puce 3</button>
+    </div>
+
+    <div class="user-card">
+      <div class="user-top"><div class="avatar" id="userAvatar">CP</div><div class="user-meta"><strong id="userInfo">Utilisateur</strong><span id="clientInfo">Client</span></div></div>
+      <div class="licence-mini" id="licenceInfo">Licence : —</div>
+      <button class="logout-btn" onclick="logout()"><i data-lucide="log-out" style="width:14px;vertical-align:middle;margin-right:5px"></i> Déconnexion</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <section id="caisseView" class="view active">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu" onclick="openSidebar()"><i data-lucide="menu"></i></button>
+          <div class="page-title"><h1>Tableau de caisse</h1><p id="pageSubtitle">Vue opérationnelle du jour</p></div>
+        </div>
+        <div class="topbar-actions">
+          <div id="onlineBadge" class="online-badge"><span class="online-dot"></span><span id="onlineText">En ligne</span></div>
+          <div class="date-control"><i data-lucide="calendar-days"></i><input type="date" id="dateFilter" onchange="handleDateChange()"></div>
+        </div>
+      </header>
+
+      <div class="kpi-grid">
+        <div class="surface kpi-card" style="--kpi-color:#60a5fa;--kpi-soft:rgba(59,130,246,.11);--kpi-glow:rgba(59,130,246,.09)"><div class="kpi-head"><span class="kpi-label">Solde global</span><span class="kpi-icon"><i data-lucide="wallet-cards"></i></span></div><div class="kpi-value" id="soldeGlobalValue">0</div><div class="kpi-note">Solde cumulé des six opérateurs</div></div>
+        <div class="surface kpi-card" style="--kpi-color:#34d399;--kpi-soft:rgba(16,185,129,.11);--kpi-glow:rgba(16,185,129,.08)"><div class="kpi-head"><span class="kpi-label">Bonus du jour</span><span class="kpi-icon"><i data-lucide="badge-plus"></i></span></div><div class="kpi-value" id="bonusGlobalValue">0</div><div class="kpi-note">Toutes opérations confondues</div></div>
+        <div class="surface kpi-card" style="--kpi-color:#fbbf24;--kpi-soft:rgba(245,158,11,.11);--kpi-glow:rgba(245,158,11,.08)"><div class="kpi-head"><span class="kpi-label">Frais du jour</span><span class="kpi-icon"><i data-lucide="receipt-text"></i></span></div><div class="kpi-value" id="fraisGlobalValue">0</div><div class="kpi-note">Total des frais enregistrés</div></div>
+        <div class="surface kpi-card" style="--kpi-color:#c4b5fd;--kpi-soft:rgba(139,92,246,.11);--kpi-glow:rgba(139,92,246,.08)"><div class="kpi-head"><span class="kpi-label">Opérations du jour</span><span class="kpi-icon"><i data-lucide="arrow-left-right"></i></span></div><div class="kpi-value" id="operationCountValue">0</div><div class="kpi-note">Nombre total de mouvements</div></div>
+      </div>
+
+      <div class="surface operator-header" id="operatorHeader" style="--operator-color:#ff7900">
+        <div class="operator-symbol"><i data-lucide="smartphone"></i></div>
+        <div class="operator-name"><strong id="opTitle">Orange</strong><span id="operatorDateLabel">Opérations de la date sélectionnée</span></div>
+        <span class="operator-badge" id="operatorBadge">OPÉRATEUR ACTIF</span>
+      </div>
+
+      <div class="workspace-grid">
+        <div class="workspace-main">
+          <div class="surface panel form-panel" id="formCard">
+            <div class="panel-head"><div class="panel-title"><i data-lucide="circle-plus"></i><div><h2 id="formTitle">Nouvelle opération</h2><span>Le solde final est calculé automatiquement.</span></div></div><button class="btn btn-ghost btn-icon" onclick="closeForm()" title="Fermer"><i data-lucide="x"></i></button></div>
+            <div class="form-grid">
+              <div class="field"><label>Solde initial <small>Automatique</small></label><input id="initial" type="number" step="0.01" oninput="calc()"></div>
+              <div class="field"><label>Téléphone</label><input id="tel" maxlength="30" placeholder="034 00 000 00"></div>
+              <div class="field"><label>Référence</label><input id="ref" maxlength="100" placeholder="Référence de transaction"></div>
+              <div class="field"><label>Dépôt</label><input id="dep" type="number" min="0" step="0.01" placeholder="0" oninput="calc()"></div>
+              <div class="field"><label>Bonus</label><input id="bon" type="number" min="0" step="0.01" placeholder="0" oninput="calc()"></div>
+              <div class="field"><label>Retrait</label><input id="ret" type="number" min="0" step="0.01" placeholder="0" oninput="calc()"></div>
+              <div class="field"><label>Frais</label><input id="frais" type="number" min="0" step="0.01" placeholder="0"></div>
+              <div class="field final-field"><label>Solde final <small>Calculé</small></label><input id="final" type="number" readonly></div>
+            </div>
+            <div class="form-actions"><button class="btn btn-ghost" onclick="clearForm(true)"><i data-lucide="rotate-ccw"></i> Réinitialiser</button><button id="submitOperationButton" class="btn btn-primary" onclick="submitOperation()"><i data-lucide="save"></i> Enregistrer</button></div>
+          </div>
+
+          <div class="surface panel">
+            <div class="panel-head">
+              <div class="panel-title"><i data-lucide="list-filter"></i><div><h2 id="tableTitle">Opérations Orange</h2><span id="tableSubtitle">Historique de la date sélectionnée</span></div></div>
+              <div class="panel-tools">
+                <div class="search-wrap"><i data-lucide="search"></i><input id="operationSearch" placeholder="Téléphone ou référence..." oninput="renderOperations()"></div>
+                <button class="btn btn-primary" onclick="openNewOperation()"><i data-lucide="plus"></i><span class="btn-text-mobile">Nouvelle opération</span></button>
+                <button class="btn btn-success" onclick="exportExcel()"><i data-lucide="file-spreadsheet"></i><span class="btn-text-mobile">Exporter</span></button>
+                <button class="btn btn-warning" onclick="document.getElementById('importExcel').click()"><i data-lucide="upload"></i><span class="btn-text-mobile">Importer</span></button>
+                <input type="file" id="importExcel" accept=".xlsx,.xls" hidden onchange="importExcel(event)">
+              </div>
+            </div>
+            <div class="table-wrap"><table class="data-table"><thead><tr><th>#</th><th>Date</th><th>Initial</th><th>Téléphone</th><th>Référence</th><th>Dépôt</th><th>Bonus</th><th>Retrait</th><th>Frais</th><th>Final</th><th>Actions</th></tr></thead><tbody id="operationBody"></tbody></table><div id="operationEmpty" class="empty-state hidden"><i data-lucide="inbox"></i><strong>Aucune opération trouvée</strong><span>Ajoutez une nouvelle opération ou modifiez votre recherche.</span></div></div>
+            <div class="table-footer"><span id="rowCount">0 ligne</span><div class="table-totals"><span>Dépôts : <strong id="tableDepTotal">0</strong></span><span>Retraits : <strong id="tableRetTotal">0</strong></span><span>Bonus : <strong id="tableBonusTotal">0</strong></span><span>Frais : <strong id="tableFraisTotal">0</strong></span></div></div>
+          </div>
+        </div>
+
+        <aside class="side-stack">
+          <div class="surface extra-card">
+            <div class="panel-title" style="margin-bottom:15px"><i data-lucide="banknote"></i><div><h3>Trésorerie opérateur</h3><span>Valeurs complémentaires du jour</span></div></div>
+            <div class="extra-fields"><div class="extra-field"><label>Espèces</label><input type="number" min="0" step="0.01" id="especes" placeholder="0" oninput="scheduleSaveExtras()"></div><div class="extra-field"><label>Total crédit</label><input type="number" min="0" step="0.01" id="totalCredit" placeholder="0" oninput="scheduleSaveExtras()"></div></div>
+            <div id="extraSaveState" class="save-state"><span class="dot"></span><span>Synchronisé avec Supabase</span></div>
+          </div>
+          <div class="surface side-total"><div class="label">Total général</div><div class="value" id="totalGeneralValue">0</div><div class="hint">Soldes opérateurs + espèces + crédits de tous les opérateurs</div></div>
+          <div class="surface quick-info"><div class="panel-title" style="margin-bottom:7px"><i data-lucide="info"></i><div><h3>Résumé opérateur</h3></div></div><div class="info-row"><span>Solde à la date</span><strong id="currentOperatorBalance">0</strong></div><div class="info-row"><span>Opérations affichées</span><strong id="currentOperatorCount">0</strong></div><div class="info-row"><span>Dernière synchronisation</span><strong id="lastSyncLabel">—</strong></div></div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="adminView" class="view">
+      <header class="topbar">
+        <div class="topbar-left"><button class="mobile-menu" onclick="openSidebar()"><i data-lucide="menu"></i></button><div class="page-title"><h1>Administration</h1><p>Gestion centralisée des clients, licences et utilisateurs</p></div></div>
+        <div class="topbar-actions"><button class="btn btn-ghost" onclick="loadAdminData()"><i data-lucide="refresh-cw"></i> Actualiser</button></div>
+      </header>
+
+      <div class="surface admin-hero"><div><h2>Centre de contrôle multi-clients</h2><p>Créez un espace client complet sans écrire de requête SQL supplémentaire.</p></div><span class="operator-symbol" style="--operator-color:#a78bfa"><i data-lucide="shield-check"></i></span></div>
+      <div class="admin-stats"><div class="surface admin-stat"><span>Clients</span><strong id="statClients">0</strong></div><div class="surface admin-stat"><span>Clients actifs</span><strong id="statActiveClients">0</strong></div><div class="surface admin-stat"><span>Utilisateurs</span><strong id="statUsers">0</strong></div><div class="surface admin-stat"><span>Licences expirées</span><strong id="statExpired">0</strong></div></div>
+      <div class="admin-tabs"><button class="admin-tab active" onclick="showAdminSection('create',this)">Nouveau client</button><button class="admin-tab" onclick="showAdminSection('clients',this)">Clients</button><button class="admin-tab" onclick="showAdminSection('users',this)">Utilisateurs</button></div>
+
+      <div id="adminCreate" class="admin-section active">
+        <div class="admin-grid">
+          <div class="surface panel">
+            <div class="panel-head"><div class="panel-title"><i data-lucide="building-2"></i><div><h2>Créer un client</h2><span>Création du client, de la licence et du premier administrateur.</span></div></div></div>
+            <div class="admin-form-grid">
+              <div class="field"><label>Nom du client</label><input id="newClientName" placeholder="Ex. Boutique Miavaka"></div>
+              <div class="field"><label>Code client</label><input id="newClientCode" placeholder="MIAVAKA" oninput="sanitizeClientCode(this)"></div>
+              <div class="field"><label>Code utilisateur</label><input id="newUserCode" placeholder="miavaka01" oninput="sanitizeUserCode(this)"></div>
+              <div class="field"><label>Nom utilisateur</label><input id="newUserName" value="Administrateur"></div>
+              <div class="field"><label>Mot de passe</label><input id="newUserPassword" type="text" placeholder="8 caractères minimum"></div>
+              <div class="field"><label>Clé licence</label><input id="newLicenceKey" placeholder="Générée automatiquement si vide"></div>
+              <div class="field"><label>Date d’expiration</label><input id="newLicenceEnd" type="date"></div>
+              <div class="field"><label>Lien partagé</label><input id="sharedAppLink" readonly></div>
+            </div>
+            <div class="form-actions"><button class="btn btn-ghost" onclick="generatePassword()"><i data-lucide="wand-sparkles"></i> Mot de passe</button><button class="btn btn-ghost" onclick="generateLicence()"><i data-lucide="key-round"></i> Licence</button><button id="createClientButton" class="btn btn-success" onclick="createClient()"><i data-lucide="building-2"></i> Créer le client</button></div>
+            <div id="adminMessage" class="message"></div><div id="credentialsBox" class="credential-card"></div><button id="copyCredentialsButton" class="btn btn-primary hidden" style="margin-top:9px" onclick="copyCredentials()"><i data-lucide="copy"></i> Copier les accès</button>
+          </div>
+          <div class="surface panel">
+            <div class="panel-head"><div class="panel-title"><i data-lucide="user-plus"></i><div><h2>Ajouter un utilisateur</h2><span>Rattachement à un client déjà existant.</span></div></div></div>
+            <div class="admin-form-grid" style="grid-template-columns:1fr">
+              <div class="field"><label>Client</label><select id="addUserClient"></select></div>
+              <div class="field"><label>Code utilisateur</label><input id="addUserCode" oninput="sanitizeUserCode(this)" placeholder="utilisateur01"></div>
+              <div class="field"><label>Nom complet</label><input id="addUserName" value="Utilisateur"></div>
+              <div class="field"><label>Rôle</label><select id="addUserRole"><option value="user">Utilisateur</option><option value="client_admin">Administrateur client</option></select></div>
+              <div class="field"><label>Mot de passe</label><input id="addUserPassword" type="text" placeholder="8 caractères minimum"></div>
+            </div>
+            <div class="form-actions"><button class="btn btn-ghost" onclick="generateAddUserPassword()"><i data-lucide="wand-sparkles"></i> Générer</button><button class="btn btn-primary" onclick="addClientUser()"><i data-lucide="user-plus"></i> Ajouter</button></div><div id="addUserMessage" class="message"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="adminClients" class="admin-section">
+        <div class="surface panel"><div class="panel-head"><div class="panel-title"><i data-lucide="buildings"></i><div><h2>Liste des clients</h2><span>Statuts, licences et utilisateurs rattachés.</span></div></div><div class="search-wrap admin-search"><i data-lucide="search"></i><input id="clientSearch" placeholder="Rechercher un client..." oninput="renderAdmin()"></div></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Code</th><th>Client</th><th>Statut</th><th>Licence</th><th>Expiration</th><th>Utilisateurs</th><th>Actions</th></tr></thead><tbody id="clientsBody"></tbody></table><div id="clientsEmpty" class="empty-state hidden"><i data-lucide="building-2"></i><strong>Aucun client</strong></div></div></div>
+      </div>
+      <div id="adminUsers" class="admin-section">
+        <div class="surface panel"><div class="panel-head"><div class="panel-title"><i data-lucide="users-round"></i><div><h2>Liste des utilisateurs</h2><span>Comptes, rôles et statuts d’accès.</span></div></div><div class="search-wrap admin-search"><i data-lucide="search"></i><input id="userSearch" placeholder="Rechercher un utilisateur..." oninput="renderAdmin()"></div></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Code utilisateur</th><th>Nom</th><th>Client</th><th>Rôle</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="usersBody"></tbody></table><div id="usersEmpty" class="empty-state hidden"><i data-lucide="users"></i><strong>Aucun utilisateur</strong></div></div></div>
+      </div>
+    </section>
+  </main>
 </div>
 
-<div class="container" id="app">
-
-<div class="sidebar">
-<h2>💼 CAISSE PRO</h2>
-
-<button class="tab-btn orange" onclick="setTab('orange')">ORANGE</button>
-<button class="tab-btn yas" onclick="setTab('yas')">YAS</button>
-<button class="tab-btn airtel" onclick="setTab('airtel')">AIRTEL</button>
-<button class="tab-btn miaro" onclick="setTab('autre')">TRANSACTION PUCE 1</button>
-
-<button class="tab-btn fitia" onclick="setTab('autre2')">TRANSACTION PUCE 2</button>
-
-<button class="tab-btn stephanie" onclick="setTab('autre3')">TRANSACTION PUCE 3</button>
-<div class="date-box">
-<input
-    type="date"
-    id="dateFilter"
-    onchange="render();loadExtras();initial.value=getLast();updateTotals()">
-</div>
-
-<div class="box" id="bonusGlobal">Bonus: 0</div>
-<div class="box" id="fraisGlobal">Frais: 0</div>
-<div class="box" id="soldeGlobal">Solde Global: 0</div>
-
-<div class="box">
-<div>Espèces</div>
-<input id="especes" oninput="saveExtras();updateTotals()">
-</div>
-
-
-<div class="box">
-<div>Total Credit</div>
-<input id="totalCredit" oninput="saveExtras();updateTotals()">
-</div>
-
-<div class="box" id="totalGeneral">TOTAL GENERAL: 0</div>
-
-</div>
-
-<div class="main">
-
-<div id="opTitle">OPÉRATEUR</div>
-
-<button class="save" onclick="toggleForm()">➕ Nouvelle opération</button>
-
-<button class="save" onclick="exportExcel()">📤 Export Excel</button>
-<button class="update" onclick="document.getElementById('importExcel').click()">📥 Import Excel</button>
-<input type="file" id="importExcel" accept=".xlsx,.xls" style="display:none" onchange="importExcel(event)">
-
-
-<div class="card" id="formCard" style="display:none">
-
-<div class="row">
-
-<div class="field">
-<label>Initial</label>
-<input id="initial" type="number">
-</div>
-
-<div class="field">
-<label>Téléphone</label>
-<input id="tel">
-</div>
-
-<div class="field">
-<label>Référence</label>
-<input id="ref">
-</div>
-
-<div class="field">
-<label>Dépôt</label>
-<input id="dep" type="number" oninput="calc()">
-</div>
-
-<div class="field">
-<label>Bonus</label>
-<input id="bon" type="number" oninput="calc()">
-</div>
-
-<div class="field">
-<label>Retrait</label>
-<input id="ret" type="number" oninput="calc()">
-</div>
-
-<div class="field">
-<label>Frais</label>
-<input id="frais" type="number">
-</div>
-
-<div class="field">
-<label>Final</label>
-<input id="final" readonly>
-</div>
-
-</div>
-<br>
-<button class="save" onclick="add()">ENREGISTRER</button>
-<button class="update" onclick="updateItem()">METTRE À JOUR</button>
-
-</div>
-<h2 id="tableTitle" style="text-align:center;margin:20px 0;">
-LISTE DES OPÉRATIONS
-</h2>
-
-<div class="card">
-
-<table>
-<thead>
-<tr>
-<th>#</th>
-<th>Date</th>
-<th>Init</th>
-<th>Tél</th>
-<th>Ref</th>
-<th>Dep</th>
-<th>Bon</th>
-<th>Ret</th>
-<th>Frais</th>
-<th>Final</th>
-<th>Action</th>
-</tr>
-</thead>
-
-<tbody id="tb"></tbody>
-</table><div id="tableTotals" style="margin-top:10px;font-weight:bold;text-align:right"></div>
-
-</div>
-</div>
+<div class="toast-region" id="toastRegion"></div>
+<div class="modal-backdrop" id="confirmModal"><div class="modal"><div class="modal-icon"><i data-lucide="triangle-alert"></i></div><h3 id="confirmTitle">Confirmation</h3><p id="confirmText">Voulez-vous continuer ?</p><div class="modal-actions"><button class="btn btn-ghost" id="confirmCancel">Annuler</button><button class="btn btn-danger" id="confirmAccept">Confirmer</button></div></div></div>
+<div class="loader-overlay" id="loaderOverlay"><div class="loader-card"><span class="spinner"></span><span id="loaderText">Traitement en cours...</span></div></div>
 
 <script>
-const SUPABASE_URL = "https://qmkvyuimxnnmsexxchun.supabase.co";
-
-const SUPABASE_KEY = "sb_publishable_O_WzsuqcNb-laFphCV8jqQ_gNv8nbUr";
-const supabase = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
-async function checkLicence(){
-
-let cle=document.getElementById("licence").value;
-
-const {data,error}=await supabase
-.from("licence")
-.select("*")
-.eq("cle_licence",cle)
-.eq("statut","active")
-.single();
-
-if(error || !data){
-    alert("Licence invalide");
-    return false;
-}
-
-let aujourd=new Date();
-let fin=new Date(data.date_fin);
-
-if(fin < aujourd){
-    alert("Licence expirée");
-    return false;
-}
-
-return true;
-
-}
-let data = JSON.parse(localStorage.getItem("data") || "[]");
-let caisseExtra=JSON.parse(localStorage.getItem("caisseExtra")||"{}");
-let tab="orange";
-let editIndex=-1;
-
-async function loadData(){
-
-const {data:rows,error}=await db
-.from("operation")
-.select("*")
-.order("id",{ascending:true});
-
-
-if(error){
-
-console.log(error);
-return;
-
-}
-
-
-data=rows || [];
-
-render();
-updateTotals();
-
-}
-function fmt(n){
- return (+n||0).toLocaleString('fr-FR').replace(/,/g,' ');
-}
-
-
-async function login(){
-if(user.value==="admin" && pass.value==="1234"){
-loginBox.style.display="none";
-app.style.display="block";
-setTab(tab);
-initDate();
-}else{
-alert("Utilisateur ou mot de passe incorrect");
-}
-}
-
-async function initDate(){
-dateFilter.value=new Date().toISOString().split("T")[0];
-await loadData();
-loadExtras();
-}
-
-function setTab(t){
-    tab = t;
-
-    let nom = "";
-
-    switch(t){
-        case "orange":
-            nom = "ORANGE";
-            break;
-        case "yas":
-            nom = "YAS";
-            break;
-        case "airtel":
-            nom = "AIRTEL";
-            break;
-        case "autre":
-    nom = "TRANSACTION PUCE 1";
-    break;
-case "autre2":
-    nom = "TRANSACTION PUCE 2";
-    break;
-case "autre3":
-    nom = "TRANSACTION PUCE 3";
-    break;
-         
-        default:
-            nom = t.toUpperCase();
-    }
-
-    opTitle.innerText = "OPÉRATEUR " + nom;
-    document.getElementById("tableTitle").innerText =
-        "LISTE DES OPÉRATIONS " + nom;
-
-    render();
-    updateTotals();
-
-}
-function toggleForm(){
-formCard.style.display=formCard.style.display==="block"?"none":"block";
-initial.value=getLast();
-}
-
-function getLast(){
- let s=dateFilter.value;
- let same=data.filter(d=>d.tab===tab&&d.date===s);
- if(same.length) return +same[same.length-1].final||0;
- let prev=data.filter(d=>d.tab===tab&&d.date<s).sort((a,b)=>a.date.localeCompare(b.date));
- return prev.length? +prev[prev.length-1].final||0:0;
-}
-
-function calc(){
-final.value=(+initial.value||0)-(+dep.value||0)+(+bon.value||0)+(+ret.value||0);
-}
-
-function clearInputs(){
-tel.value="";
-ref.value="";
-dep.value="";
-bon.value="";
-ret.value="";
-frais.value="";
-final.value="";
-}
-
-function add(){
-data.push({
-tab,
-date:dateFilter.value,
-initial:+initial.value||0,
-tel:tel.value,
-ref:ref.value,
-dep:+dep.value||0,
-bon:+bon.value||0,
-ret:+ret.value||0,
-frais:+frais.value||0,
-final:+final.value||0
-});
-
-save();
-saveExtras();
-render();
-loadExtras();
-clearInputs();
-initial.value=getLast();
-}
-
-function render(){
-
-    let arr=data.map((d,index)=>({...d,_index:index})).filter(d=>d.tab===tab);
-
-    if(dateFilter.value) arr=arr.filter(d=>d.date===dateFilter.value);
-
-    arr.sort((a,b)=>{
-        if(a.date===b.date) return a._index-b._index;
-        return a.date.localeCompare(b.date);
-    });
-
-    tb.innerHTML="";
-
-    arr.forEach((d,i)=>{
-tb.innerHTML+=`
-<tr>
-<td>${i+1}</td>
-<td>${d.date}</td>
-<td>${fmt(d.initial)}</td>
-<td>${d.telephone}</td>
-<td>${d.ref}</td>
-<td>${fmt(d.dep)}</td>
-<td>${fmt(d.bon)}</td>
-<td>${fmt(d.ret)}</td>
-<td>${fmt(d.frais)}</td>
-<td>${fmt(d.final)}</td>
-<td>
-<button class="update" onclick="edit(${d._index})">✏️</button>
-<button class="del" onclick="del(${d._index})">🗑️</button>
-</td>
-</tr>`;
-});
-let tbBonus=0,tbFrais=0;
-arr.forEach(d=>{tbBonus+=(+d.bon||0);tbFrais+=(+d.frais||0);});
-document.getElementById('tableTotals').innerHTML='Total Bonus : '+fmt(tbBonus)+' &nbsp;&nbsp; Total Frais : '+fmt(tbFrais);
-}
-
-function edit(index){
-editIndex=index;
-let d=data[index];
-formCard.style.display="block";
-initial.value=d.initial;
-tel.value=d.telephone;
-ref.value=d.ref;
-dep.value=d.dep;
-bon.value=d.bon;
-ret.value=d.ret;
-frais.value=d.frais;
-calc();
-}
-
-function updateItem(){
-if(editIndex<0)return;
-let item=data[editIndex];
-item.initial=+initial.value||0;
-item.tel=tel.value;
-item.ref=ref.value;
-item.dep=+dep.value||0;
-item.bon=+bon.value||0;
-item.ret=+ret.value||0;
-item.frais=+frais.value||0;
-item.final=item.initial-item.dep+item.bon+item.ret;
-save();render();updateTotals();
-clearInputs();initial.value=getLast();editIndex=-1;
-}
-
-/* ================= FIXED FORMULAS ================= */
-function getLastByTab(t){
-
-    let selectedDate = dateFilter.value;
-
-    let arr = data.filter(d =>
-        d.tab === t &&
-        d.date === selectedDate
-    );
-
-    if(arr.length === 0) return 0;
-
-    return +arr[arr.length-1].final || 0;
-}
-function updateTotals(){
-
-let bonus = 0;
-let frais = 0;
-
-let selectedDate = dateFilter.value;
-
-data.forEach(d=>{
-    if(d.date === selectedDate){
-        bonus += (+d.bon || 0);
-        frais += (+d.frais || 0);
-    }
-});
-/* SOLDE GLOBAL */
-let soldeGlobal =
-getLastByTab("orange") +
-getLastByTab("yas") +
-getLastByTab("airtel") +
-getLastByTab("autre") +
-getLastByTab("autre2") +
-getLastByTab("autre3");
-
-/* INPUTS */
-let espece = +especes.value || 0;
-let credit = +totalCredit.value || 0;
-
-/* TOTAL GENERAL */
-let total = soldeGlobal + espece + credit;
-
-/* DISPLAY */
-document.getElementById("soldeGlobal").innerText="Solde Global: "+fmt(soldeGlobal);
-document.getElementById("bonusGlobal").innerText="Bonus: "+fmt(bonus);
-document.getElementById("fraisGlobal").innerText="Frais: "+fmt(frais);
-document.getElementById("totalGeneral").innerText="TOTAL GENERAL: "+fmt(total);
-}
-
-
-function extraKey(){
-    return tab + "_" + dateFilter.value;
-}
-function loadExtras(){
-
-    let e = caisseExtra[extraKey()] || {};
-
-    especes.value = e.especes || "";
-    totalCredit.value = e.credit || "";
-
-    updateTotals();
-}
-
-function saveExtras(){
-
-    caisseExtra[extraKey()] = {
-        especes: +especes.value || 0,
-        credit: +totalCredit.value || 0
-    };
-
-    localStorage.setItem(
-        "caisseExtra",
-        JSON.stringify(caisseExtra)
-    );
-
-    updateTotals();
-}
-
-function del(index){
-    data.splice(index,1);
-    save();
-    render();
-    updateTotals();
-}
-
-async function save(){
-
-const operation = {
-
-tab:tab,
-date:dateFilter.value,
-initial:+initial.value||0,
-tel:tel.value,
-ref:ref.value,
-dep:+dep.value||0,
-bon:+bon.value||0,
-ret:+ret.value||0,
-frais:+frais.value||0,
-final:+final.value||0
-
+'use strict';
+const $ = id => document.getElementById(id);
+const OPERATOR_CONFIG = {
+  orange:{name:'Orange',color:'#ff7900'},yas:{name:'Yas',color:'#22c55e'},airtel:{name:'Airtel',color:'#ef4444'},
+  autre:{name:'Transaction Puce 1',color:'#8b5cf6'},autre2:{name:'Transaction Puce 2',color:'#06b6d4'},autre3:{name:'Transaction Puce 3',color:'#e11d48'}
 };
+const OPERATOR_KEYS = Object.keys(OPERATOR_CONFIG);
+let operations=[], dayExtras={}, currentUser=null, currentProfile=null, currentLicence=null, currentClient=null;
+let tab='orange', editId=null, licenceTimer=null, extrasSaveTimer=null, adminClients=[], adminProfiles=[], adminLicences=[];
+let confirmResolver=null;
 
+const normalizeCode=value=>String(value||'').trim().toLowerCase();
+const codeToEmail=code=>`${normalizeCode(code)}@caissepro.local`;
+const fmt=n=>Number(n||0).toLocaleString('fr-FR',{maximumFractionDigits:2});
+const localDate=()=>{const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)};
+const esc=value=>String(value??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
+const expired=date=>!!date&&new Date(`${date}T23:59:59`)<new Date();
+const numberValue=id=>Number($(id).value||0);
+const validNumber=value=>Number.isFinite(Number(value))&&Number(value)>=0;
+const formatDate=date=>{if(!date)return'—';const [y,m,d]=String(date).split('-');return y&&m&&d?`${d}/${m}/${y}`:date};
+function refreshIcons(){window.lucide?.createIcons()}
+function sanitizeClientCode(input){input.value=input.value.toUpperCase().replace(/[^A-Z0-9_-]/g,'')}
+function sanitizeUserCode(input){input.value=input.value.toLowerCase().replace(/[^a-z0-9._-]/g,'')}
+function setMessage(id,text,type='info'){const el=$(id);el.textContent=text||'';el.className=`message ${type}`}
+function setBusy(show,text='Traitement en cours...'){$('loaderText').textContent=text;$('loaderOverlay').classList.toggle('open',show)}
+function toast(message,type='success',title=''){const titles={success:'Succès',error:'Erreur',warning:'Attention',info:'Information'};const icons={success:'circle-check',error:'circle-x',warning:'triangle-alert',info:'info'};const item=document.createElement('div');item.className=`toast ${type}`;item.innerHTML=`<i data-lucide="${icons[type]||'info'}"></i><div><strong>${esc(title||titles[type])}</strong><span>${esc(message)}</span></div>`;$('toastRegion').appendChild(item);refreshIcons();setTimeout(()=>item.remove(),4500)}
+function confirmAction(text,title='Confirmation'){return new Promise(resolve=>{confirmResolver=resolve;$('confirmTitle').textContent=title;$('confirmText').textContent=text;$('confirmModal').classList.add('open')})}
+function closeConfirm(result){$('confirmModal').classList.remove('open');if(confirmResolver){confirmResolver(result);confirmResolver=null}}
+function togglePassword(id,button){const input=$(id);input.type=input.type==='password'?'text':'password';button.innerHTML=`<i data-lucide="${input.type==='password'?'eye':'eye-off'}"></i>`;refreshIcons()}
+function openSidebar(){$('sidebar').classList.add('open');$('sidebarBackdrop').classList.add('open')}
+function closeSidebar(){$('sidebar').classList.remove('open');$('sidebarBackdrop').classList.remove('open')}
+function updateOnlineStatus(){const online=navigator.onLine;$('onlineBadge').classList.toggle('offline',!online);$('onlineText').textContent=online?'En ligne':'Hors ligne'}
 
+async function fetchAccess(user,enteredCode='',enteredLicence=''){
+  const {data:profile,error:pErr}=await db.from('profiles').select('id,client_id,code_user,nom,role,cle_licence,statut').eq('id',user.id).single();
+  if(pErr||!profile)throw new Error('Profil utilisateur introuvable.');
+  if(profile.statut!=='active')throw new Error('Ce compte utilisateur est inactif ou bloqué.');
+  if(enteredCode&&normalizeCode(profile.code_user)!==normalizeCode(enteredCode))throw new Error('Code utilisateur incorrect.');
+  if(!profile.client_id)throw new Error('Aucun client n’est lié à ce compte.');
+  const [{data:client,error:cErr},{data:lic,error:lErr}]=await Promise.all([
+    db.from('clients').select('id,code_client,nom,statut').eq('id',profile.client_id).single(),
+    db.from('licence').select('id,client_id,cle_licence,statut,date_fin').eq('cle_licence',profile.cle_licence).single()
+  ]);
+  if(cErr||!client)throw new Error('Client introuvable.');
+  if(client.statut!=='active')throw new Error('Ce client est inactif ou bloqué.');
+  if(lErr||!lic)throw new Error('Licence introuvable.');
+  if(lic.client_id!==profile.client_id)throw new Error('Cette licence n’est pas liée au client.');
+  if(enteredLicence&&String(enteredLicence).trim()!==lic.cle_licence)throw new Error('Clé licence incorrecte.');
+  if(lic.statut!=='active')throw new Error('Cette licence est inactive ou bloquée.');
+  if(expired(lic.date_fin))throw new Error('Cette licence a expiré.');
+  return{profile,client,lic};
+}
+async function login(){
+  const btn=$('loginButton');btn.disabled=true;setMessage('loginStatus','Vérification des accès...','info');
+  try{
+    const code=$('loginCode').value.trim(),password=$('loginPassword').value,licence=$('loginLicence').value.trim();
+    if(!code||!password||!licence)throw new Error('Veuillez renseigner les trois champs.');
+    if(!/^[a-zA-Z0-9._-]{3,50}$/.test(code))throw new Error('Format du code utilisateur invalide.');
+    const {data,error}=await db.auth.signInWithPassword({email:codeToEmail(code),password});
+    if(error||!data.user)throw new Error('Code utilisateur ou mot de passe incorrect.');
+    try{await openApp(data.user,await fetchAccess(data.user,code,licence))}catch(error){await db.auth.signOut();throw error}
+  }catch(error){setMessage('loginStatus',error.message||'Connexion impossible.','error')}
+  finally{btn.disabled=false}
+}
+async function restoreSession(){const {data}=await db.auth.getSession();if(!data.session?.user)return;try{setBusy(true,'Restauration de la session...');await openApp(data.session.user,await fetchAccess(data.session.user))}catch(error){await db.auth.signOut();setMessage('loginStatus',error.message,'error')}finally{setBusy(false)}}
+async function openApp(user,access){
+  currentUser=user;currentProfile=access.profile;currentClient=access.client;currentLicence=access.lic;
+  $('loginBox').style.display='none';$('app').style.display='block';
+  $('userInfo').textContent=currentProfile.nom||currentProfile.code_user;$('clientInfo').textContent=currentClient.nom;
+  $('userAvatar').textContent=(currentProfile.nom||currentProfile.code_user||'CP').split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase();
+  $('licenceInfo').textContent=`Licence ${currentLicence.cle_licence} · ${currentLicence.date_fin?`expire le ${formatDate(currentLicence.date_fin)}`:'sans expiration'}`;
+  $('adminNav').style.display=currentProfile.role==='superadmin'?'flex':'none';$('dateFilter').value=localDate();$('sharedAppLink').value=location.href.split('?')[0].split('#')[0];
+  showView('caisse');setBusy(true,'Chargement de la caisse...');await Promise.all([loadOperations(),loadExtras()]);setBusy(false);startLicenceCheck();if(currentProfile.role==='superadmin')await loadAdminData();refreshIcons();
+}
+async function logout(){if(licenceTimer)clearInterval(licenceTimer);setBusy(true,'Déconnexion...');await db.auth.signOut();operations=[];dayExtras={};currentUser=currentProfile=currentClient=currentLicence=null;$('app').style.display='none';$('loginBox').style.display='grid';$('loginPassword').value='';$('loginLicence').value='';setMessage('loginStatus','Déconnexion effectuée.','success');setBusy(false)}
+function startLicenceCheck(){if(licenceTimer)clearInterval(licenceTimer);licenceTimer=setInterval(async()=>{try{const access=await fetchAccess(currentUser);currentProfile=access.profile;currentClient=access.client;currentLicence=access.lic}catch(error){toast(error.message,'error','Accès interrompu');await logout()}},300000)}
 
-const {error}=await db
-.from("operation")
-.insert(operation);
+function showView(name){
+  const adminAllowed=currentProfile?.role==='superadmin';if(name==='admin'&&!adminAllowed)return;
+  $('caisseView').classList.toggle('active',name==='caisse');$('adminView').classList.toggle('active',name==='admin');$('caisseNav').classList.toggle('active',name==='caisse');$('adminNav').classList.toggle('active',name==='admin');$('operatorMenu').style.display=name==='caisse'?'block':'none';closeSidebar();if(name==='admin')loadAdminData();refreshIcons();
+}
+function showAdminSection(name,button){document.querySelectorAll('.admin-section').forEach(el=>el.classList.remove('active'));document.querySelectorAll('.admin-tab').forEach(el=>el.classList.remove('active'));$(`admin${name[0].toUpperCase()+name.slice(1)}`).classList.add('active');button?.classList.add('active');refreshIcons()}
+function setTab(value){
+  if(!OPERATOR_CONFIG[value])return;tab=value;document.querySelectorAll('.operator-btn').forEach(btn=>btn.classList.toggle('active',btn.dataset.tab===tab));
+  const config=OPERATOR_CONFIG[tab];$('operatorHeader').style.setProperty('--operator-color',config.color);$('opTitle').textContent=config.name;$('tableTitle').textContent=`Opérations ${config.name}`;
+  closeForm();renderOperations();fillCurrentExtraInputs();updateTotals();closeSidebar();
+}
+function handleDateChange(){closeForm();renderOperations();loadExtras();$('pageSubtitle').textContent=`Vue du ${formatDate($('dateFilter').value)}`}
 
+async function loadOperations(){
+  if(!currentProfile)return;const {data,error}=await db.from('operation').select('*').eq('client_id',currentProfile.client_id).order('date',{ascending:true}).order('id',{ascending:true});
+  if(error){toast(`Chargement impossible : ${error.message}`,'error');return}
+  operations=(data||[]).map(row=>({...row,initial:Number(row.initial||0),dep:Number(row.dep||0),bon:Number(row.bon||0),ret:Number(row.ret||0),frais:Number(row.frais||0),final:Number(row.final||0)}));renderOperations();
+}
+function selectedRows(){const date=$('dateFilter').value,term=normalizeCode($('operationSearch')?.value);return operations.filter(row=>row.tab===tab&&row.date===date&&(!term||normalizeCode(`${row.tel||''} ${row.ref||''}`).includes(term))).sort((a,b)=>a.id-b.id)}
+function renderOperations(){
+  if(!$('operationBody'))return;const rows=selectedRows();
+  $('operationBody').innerHTML=rows.map((row,index)=>`<tr><td>${index+1}</td><td>${formatDate(row.date)}</td><td class="number-cell">${fmt(row.initial)}</td><td>${esc(row.tel||'—')}</td><td class="ref-cell" title="${esc(row.ref||'')}">${esc(row.ref||'—')}</td><td class="number-cell negative">${fmt(row.dep)}</td><td class="number-cell positive">${fmt(row.bon)}</td><td class="number-cell positive">${fmt(row.ret)}</td><td class="number-cell">${fmt(row.frais)}</td><td class="number-cell positive">${fmt(row.final)}</td><td><div class="action-cell"><button class="btn btn-warning btn-xs" onclick="editOperation(${row.id})" title="Modifier"><i data-lucide="pencil"></i></button><button class="btn btn-danger btn-xs" onclick="deleteOperation(${row.id})" title="Supprimer"><i data-lucide="trash-2"></i></button></div></td></tr>`).join('');
+  $('operationEmpty').classList.toggle('hidden',rows.length>0);$('operationBody').closest('table').classList.toggle('hidden',rows.length===0);
+  const dep=rows.reduce((sum,row)=>sum+row.dep,0),ret=rows.reduce((sum,row)=>sum+row.ret,0),bonus=rows.reduce((sum,row)=>sum+row.bon,0),frais=rows.reduce((sum,row)=>sum+row.frais,0);
+  $('rowCount').textContent=`${rows.length} ligne${rows.length>1?'s':''}`;$('tableDepTotal').textContent=fmt(dep);$('tableRetTotal').textContent=fmt(ret);$('tableBonusTotal').textContent=fmt(bonus);$('tableFraisTotal').textContent=fmt(frais);$('currentOperatorCount').textContent=rows.length;
+  updateTotals();refreshIcons();
+}
+function getBalanceAtDate(operator,date){const rows=operations.filter(row=>row.tab===operator&&row.date<=date).sort((a,b)=>String(a.date).localeCompare(String(b.date))||a.id-b.id);return rows.length?Number(rows.at(-1).final||0):0}
+function getLast(){return getBalanceAtDate(tab,$('dateFilter').value)}
+function calc(){$('final').value=numberValue('initial')-numberValue('dep')+numberValue('bon')+numberValue('ret')}
+function openNewOperation(){editId=null;$('formTitle').textContent='Nouvelle opération';$('submitOperationButton').innerHTML='<i data-lucide="save"></i> Enregistrer';clearForm(false);$('formCard').classList.add('open');$('initial').focus();refreshIcons()}
+function closeForm(){$('formCard').classList.remove('open');editId=null;clearForm(false)}
+function clearForm(keepOpen=false){['tel','ref','dep','bon','ret','frais','final'].forEach(id=>$(id).value='');$('initial').value=getLast();editId=null;if(!keepOpen)$('formCard')?.classList.remove('open');$('formTitle').textContent='Nouvelle opération';$('submitOperationButton').innerHTML='<i data-lucide="save"></i> Enregistrer';calc();refreshIcons()}
+function formData(owner=false){calc();const row={tab,date:$('dateFilter').value,initial:numberValue('initial'),tel:$('tel').value.trim(),ref:$('ref').value.trim(),dep:numberValue('dep'),bon:numberValue('bon'),ret:numberValue('ret'),frais:numberValue('frais'),final:numberValue('final')};if(owner){row.client_id=currentProfile.client_id;row.created_by=currentUser.id}return row}
+function validateOperation(row){if(!row.date)return'La date est obligatoire.';for(const key of['initial','dep','bon','ret','frais','final'])if(!Number.isFinite(row[key]))return'Un montant saisi est invalide.';for(const key of['dep','bon','ret','frais'])if(row[key]<0)return'Les montants ne peuvent pas être négatifs.';if(row.dep===0&&row.bon===0&&row.ret===0&&row.frais===0)return'Renseignez au moins un mouvement financier.';return''}
+function findDuplicate(row,excludeId=null){return operations.find(item=>item.id!==excludeId&&item.tab===row.tab&&item.date===row.date&&row.ref&&normalizeCode(item.ref)===normalizeCode(row.ref))}
+async function submitOperation(){if(editId===null)await addOperation();else await updateOperation()}
+async function addOperation(){
+  const row=formData(true),validation=validateOperation(row);if(validation)return toast(validation,'warning');
+  const duplicate=findDuplicate(row);if(duplicate&&!await confirmAction(`La référence « ${row.ref} » existe déjà pour ${OPERATOR_CONFIG[tab].name} à cette date. Enregistrer quand même ?`,'Référence en double'))return;
+  setBusy(true,'Enregistrement de l’opération...');const {error}=await db.from('operation').insert(row);setBusy(false);if(error)return toast(error.message,'error');await loadOperations();closeForm();toast('Opération enregistrée avec succès.')
+}
+function editOperation(id){const row=operations.find(item=>item.id===id);if(!row)return;editId=id;$('formCard').classList.add('open');$('formTitle').textContent='Modifier l’opération';$('submitOperationButton').innerHTML='<i data-lucide="save"></i> Enregistrer les modifications';for(const key of['initial','tel','ref','dep','bon','ret','frais'])$(key).value=row[key]??'';calc();window.scrollTo({top:0,behavior:'smooth'});refreshIcons()}
+async function updateOperation(){
+  if(editId===null)return toast('Sélectionnez une opération à modifier.','warning');const row=formData(),validation=validateOperation(row);if(validation)return toast(validation,'warning');
+  const duplicate=findDuplicate(row,editId);if(duplicate&&!await confirmAction(`La référence « ${row.ref} » existe déjà. Enregistrer quand même ?`,'Référence en double'))return;
+  setBusy(true,'Mise à jour de l’opération...');const {error}=await db.from('operation').update(row).eq('id',editId).eq('client_id',currentProfile.client_id);setBusy(false);if(error)return toast(error.message,'error');await loadOperations();closeForm();toast('Opération mise à jour.')
+}
+async function deleteOperation(id){if(!await confirmAction('Cette opération sera supprimée définitivement.','Supprimer l’opération ?'))return;setBusy(true,'Suppression...');const {error}=await db.from('operation').delete().eq('id',id).eq('client_id',currentProfile.client_id);setBusy(false);if(error)return toast(error.message,'error');await loadOperations();toast('Opération supprimée.','success')}
 
-if(error){
-
-console.log(error);
-alert("Erreur enregistrement");
-
-return;
-
+async function loadExtras(){
+  if(!currentProfile)return;const date=$('dateFilter').value;const {data,error}=await db.from('caisse_extra').select('tab,especes,credit').eq('client_id',currentProfile.client_id).eq('date',date);
+  if(error){dayExtras={};fillCurrentExtraInputs();updateTotals();return toast(`Trésorerie non chargée : ${error.message}`,'error')}
+  dayExtras={};for(const row of data||[])dayExtras[row.tab]={especes:Number(row.especes||0),credit:Number(row.credit||0)};fillCurrentExtraInputs();updateTotals();markExtraSaved();
+}
+function fillCurrentExtraInputs(){const extra=dayExtras[tab]||{};$('especes').value=extra.especes||'';$('totalCredit').value=extra.credit||''}
+function scheduleSaveExtras(){dayExtras[tab]={especes:numberValue('especes'),credit:numberValue('totalCredit')};updateTotals();markExtraSaving();clearTimeout(extrasSaveTimer);extrasSaveTimer=setTimeout(saveExtras,650)}
+async function saveExtras(){
+  if(!currentProfile)return;const row={client_id:currentProfile.client_id,date:$('dateFilter').value,tab,especes:numberValue('especes'),credit:numberValue('totalCredit'),updated_by:currentUser.id,updated_at:new Date().toISOString()};
+  const {error}=await db.from('caisse_extra').upsert(row,{onConflict:'client_id,date,tab'});if(error){markExtraError();return toast(`Sauvegarde impossible : ${error.message}`,'error')}dayExtras[tab]={especes:row.especes,credit:row.credit};markExtraSaved();updateTotals();
+}
+function markExtraSaving(){const el=$('extraSaveState');el.className='save-state saving';el.lastElementChild.textContent='Synchronisation...'}
+function markExtraSaved(){const el=$('extraSaveState');el.className='save-state saved';el.lastElementChild.textContent='Synchronisé avec Supabase';$('lastSyncLabel').textContent=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}
+function markExtraError(){const el=$('extraSaveState');el.className='save-state';el.lastElementChild.textContent='Échec de synchronisation'}
+function updateTotals(){
+  if(!$('dateFilter').value)return;const date=$('dateFilter').value,day=operations.filter(row=>row.date===date);const bonus=day.reduce((sum,row)=>sum+row.bon,0),frais=day.reduce((sum,row)=>sum+row.frais,0),solde=OPERATOR_KEYS.reduce((sum,key)=>sum+getBalanceAtDate(key,date),0),extras=OPERATOR_KEYS.reduce((sum,key)=>sum+Number(dayExtras[key]?.especes||0)+Number(dayExtras[key]?.credit||0),0),total=solde+extras;
+  $('bonusGlobalValue').textContent=fmt(bonus);$('fraisGlobalValue').textContent=fmt(frais);$('soldeGlobalValue').textContent=fmt(solde);$('operationCountValue').textContent=day.length;$('totalGeneralValue').textContent=fmt(total);$('currentOperatorBalance').textContent=fmt(getBalanceAtDate(tab,date));$('operatorDateLabel').textContent=`Opérations du ${formatDate(date)}`;$('pageSubtitle').textContent=`Vue du ${formatDate(date)}`;
 }
 
-
-await loadData();
-
+function excelDate(value){if(typeof value==='number'){const parsed=XLSX.SSF.parse_date_code(value);if(parsed)return`${parsed.y}-${String(parsed.m).padStart(2,'0')}-${String(parsed.d).padStart(2,'0')}`}const str=String(value||'').trim();if(/^\d{4}-\d{2}-\d{2}/.test(str))return str.slice(0,10);const match=str.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);if(match)return`${match[3]}-${match[2].padStart(2,'0')}-${match[1].padStart(2,'0')}`;return localDate()}
+function normalizeTab(value){const raw=normalizeCode(value).replace(/\s+/g,'');const map={orange:'orange',yas:'yas',airtel:'airtel',autre:'autre',autre2:'autre2',autre3:'autre3',transactionpuce1:'autre',transactionpuce2:'autre2',transactionpuce3:'autre3',puce1:'autre',puce2:'autre2',puce3:'autre3'};return map[raw]||'orange'}
+async function exportExcel(){
+  if(!window.XLSX)return toast('Bibliothèque Excel indisponible. Vérifiez la connexion Internet.','error');setBusy(true,'Préparation du fichier Excel...');
+  try{
+    const {data:allExtras,error}=await db.from('caisse_extra').select('date,tab,especes,credit').eq('client_id',currentProfile.client_id).order('date');if(error)throw error;
+    const operationRows=operations.map(row=>({Opérateur:OPERATOR_CONFIG[row.tab]?.name||row.tab,Date:row.date,Initial:row.initial,Téléphone:row.tel,Référence:row.ref,Dépôt:row.dep,Bonus:row.bon,Retrait:row.ret,Frais:row.frais,Final:row.final}));
+    const date=$('dateFilter').value,summary=OPERATOR_KEYS.map(key=>{const rows=operations.filter(row=>row.tab===key&&row.date===date),extra=dayExtras[key]||{};return{Opérateur:OPERATOR_CONFIG[key].name,'Solde à la date':getBalanceAtDate(key,date),Dépôts:rows.reduce((s,x)=>s+x.dep,0),Retraits:rows.reduce((s,x)=>s+x.ret,0),Bonus:rows.reduce((s,x)=>s+x.bon,0),Frais:rows.reduce((s,x)=>s+x.frais,0),Espèces:Number(extra.especes||0),Crédit:Number(extra.credit||0),Opérations:rows.length}});
+    const extraRows=(allExtras||[]).map(row=>({Date:row.date,Opérateur:OPERATOR_CONFIG[row.tab]?.name||row.tab,Espèces:Number(row.especes||0),Crédit:Number(row.credit||0)}));
+    const wb=XLSX.utils.book_new(),wsOps=XLSX.utils.json_to_sheet(operationRows),wsSummary=XLSX.utils.json_to_sheet(summary),wsExtras=XLSX.utils.json_to_sheet(extraRows);wsOps['!cols']=[{wch:22},{wch:13},{wch:14},{wch:18},{wch:24},{wch:14},{wch:14},{wch:14},{wch:14},{wch:14}];wsSummary['!cols']=Array(10).fill({wch:18});wsExtras['!cols']=[{wch:13},{wch:22},{wch:16},{wch:16}];XLSX.utils.book_append_sheet(wb,wsOps,'Opérations');XLSX.utils.book_append_sheet(wb,wsSummary,'Résumé du jour');XLSX.utils.book_append_sheet(wb,wsExtras,'Espèces et crédits');XLSX.writeFile(wb,`caisse_${currentClient.code_client}_${date}.xlsx`);toast('Fichier Excel généré.')
+  }catch(error){toast(`Export impossible : ${error.message}`,'error')}finally{setBusy(false)}
 }
-}
-function exportExcel(){
- const wb=XLSX.utils.book_new();
- const ws=XLSX.utils.json_to_sheet(data);
- XLSX.utils.book_append_sheet(wb,ws,"Operations");
- XLSX.writeFile(wb,"caisse_pro.xlsx");
-}
-function importExcel(e){
- const f=e.target.files[0]; 
- if(!f)return;
-
- const r=new FileReader();
-
- r.onload=function(ev){
-  const wb=XLSX.read(ev.target.result,{type:'binary'});
-  const ws=wb.Sheets[wb.SheetNames[0]];
-  data=XLSX.utils.sheet_to_json(ws,{defval:""});
-  save();
-  render();
-  updateTotals();
-  alert("Import terminé");
- };
-
- r.readAsBinaryString(f);
+async function importExcel(event){
+  const file=event.target.files[0];if(!file)return;if(!window.XLSX){event.target.value='';return toast('Bibliothèque Excel indisponible.','error')}
+  try{
+    setBusy(true,'Analyse du fichier Excel...');const buffer=await file.arrayBuffer(),wb=XLSX.read(buffer,{type:'array'}),raw=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
+    const rows=raw.map(item=>{const dep=Number(item.dep??item.Dépôt??item.Depot??0),bon=Number(item.bon??item.Bonus??0),ret=Number(item.ret??item.Retrait??0),initial=Number(item.initial??item.Initial??0);return{client_id:currentProfile.client_id,created_by:currentUser.id,tab:normalizeTab(item.tab??item.Opérateur??item.Operateur),date:excelDate(item.date??item.Date),initial:Number.isFinite(initial)?initial:0,tel:String(item.tel??item.Téléphone??item.Telephone??''),ref:String(item.ref??item.Référence??item.Reference??''),dep:Number.isFinite(dep)?dep:0,bon:Number.isFinite(bon)?bon:0,ret:Number.isFinite(ret)?ret:0,frais:Number(item.frais??item.Frais??0)||0,final:Number(item.final??item.Final??(initial-dep+bon+ret))||0}}).filter(row=>!validateOperation(row));
+    if(!rows.length)throw new Error('Aucune ligne valide à importer.');
+    const fingerprints=new Set(operations.map(row=>`${row.tab}|${row.date}|${normalizeCode(row.ref)}|${row.initial}|${row.dep}|${row.bon}|${row.ret}|${row.final}`));const unique=[];for(const row of rows){const fp=`${row.tab}|${row.date}|${normalizeCode(row.ref)}|${row.initial}|${row.dep}|${row.bon}|${row.ret}|${row.final}`;if(!fingerprints.has(fp)){fingerprints.add(fp);unique.push(row)}}
+    if(!unique.length)throw new Error('Toutes les lignes existent déjà. Aucun doublon n’a été ajouté.');setBusy(false);if(!await confirmAction(`${unique.length} nouvelle(s) opération(s) seront importée(s). ${rows.length-unique.length} doublon(s) ont été ignoré(s).`,'Confirmer l’import'))return;
+    setBusy(true,'Importation dans Supabase...');const {error}=await db.from('operation').insert(unique);if(error)throw error;await loadOperations();toast(`${unique.length} opération(s) importée(s).`)
+  }catch(error){toast(`Import impossible : ${error.message}`,'error')}finally{setBusy(false);event.target.value=''}
 }
 
+async function invokeAdmin(body){const {data,error}=await db.functions.invoke('manage-client',{body});if(error){let message=error.message||'Erreur de la fonction manage-client.';try{if(error.context){const json=await error.context.json();message=json.error||json.message||message}}catch{}if(/Failed to send|FunctionsFetchError|not found/i.test(message))message='La fonction Supabase « manage-client » est absente ou non déployée. Consultez INSTALLATION_V12.txt.';throw new Error(message)}if(data?.error)throw new Error(data.error);return data}
+function randomString(length=12){const chars='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#';let out='';const values=new Uint32Array(length);crypto.getRandomValues(values);values.forEach(value=>out+=chars[value%chars.length]);return out}
+function generatePassword(){$('newUserPassword').value=randomString(12)}function generateAddUserPassword(){$('addUserPassword').value=randomString(12)}
+function generateLicence(){const code=$('newClientCode').value||'CLIENT';$('newLicenceKey').value=`CP-${code}-${crypto.randomUUID().slice(0,8).toUpperCase()}`}
+function validateClientForm(){const name=$('newClientName').value.trim(),clientCode=$('newClientCode').value.trim(),userCode=$('newUserCode').value.trim(),password=$('newUserPassword').value,licence=$('newLicenceKey').value.trim();if(name.length<2)return'Nom du client obligatoire.';if(!/^[A-Z0-9_-]{3,30}$/.test(clientCode))return'Code client invalide.';if(!/^[a-z0-9._-]{3,50}$/.test(userCode))return'Code utilisateur invalide.';if(password.length<8)return'Le mot de passe doit contenir au moins 8 caractères.';if(licence&&!/^[A-Za-z0-9_-]{6,100}$/.test(licence))return'Format de licence invalide.';return''}
+async function createClient(){
+  const validation=validateClientForm();if(validation)return setMessage('adminMessage',validation,'error');const btn=$('createClientButton');btn.disabled=true;setMessage('adminMessage','Création du client...','info');$('credentialsBox').style.display='none';$('copyCredentialsButton').classList.add('hidden');
+  try{
+    setBusy(true,'Création du client et des accès...');const payload={action:'create_client',nom_client:$('newClientName').value.trim(),code_client:$('newClientCode').value.trim(),code_user:$('newUserCode').value.trim(),nom_user:$('newUserName').value.trim(),password:$('newUserPassword').value,cle_licence:$('newLicenceKey').value.trim(),date_fin:$('newLicenceEnd').value||null};const result=await invokeAdmin(payload);
+    const text=`CLIENT CRÉÉ\n\nLien : ${$('sharedAppLink').value}\nClient : ${result.client.nom}\nCode utilisateur : ${result.user.code_user}\nMot de passe : ${$('newUserPassword').value}\nLicence : ${result.licence.cle_licence}\nExpiration : ${result.licence.date_fin?formatDate(result.licence.date_fin):'Sans expiration'}`;$('credentialsBox').textContent=text;$('credentialsBox').style.display='block';$('copyCredentialsButton').classList.remove('hidden');setMessage('adminMessage','Client créé avec succès.','success');toast('Le client et son premier utilisateur ont été créés.');await loadAdminData();
+  }catch(error){setMessage('adminMessage',error.message,'error');toast(error.message,'error')}finally{setBusy(false);btn.disabled=false;refreshIcons()}
+}
+async function copyCredentials(){const text=$('credentialsBox').textContent;try{await navigator.clipboard.writeText(text);toast('Accès copiés dans le presse-papiers.')}catch{window.prompt('Copiez les accès :',text)}}
+async function addClientUser(){
+  const clientId=$('addUserClient').value,code=$('addUserCode').value.trim(),name=$('addUserName').value.trim(),password=$('addUserPassword').value;if(!clientId)return setMessage('addUserMessage','Sélectionnez un client.','error');if(!/^[a-z0-9._-]{3,50}$/.test(code))return setMessage('addUserMessage','Code utilisateur invalide.','error');if(password.length<8)return setMessage('addUserMessage','Mot de passe de 8 caractères minimum.','error');
+  setMessage('addUserMessage','Création de l’utilisateur...','info');try{setBusy(true,'Création de l’utilisateur...');await invokeAdmin({action:'add_user',client_id:clientId,code_user:code,nom_user:name,role:$('addUserRole').value,password});setMessage('addUserMessage',`Utilisateur créé : ${code}.`,'success');toast('Utilisateur ajouté.');await loadAdminData()}catch(error){setMessage('addUserMessage',error.message,'error');toast(error.message,'error')}finally{setBusy(false)}
+}
+async function loadAdminData(){
+  if(currentProfile?.role!=='superadmin')return;const [clientsResult,profilesResult,licencesResult]=await Promise.all([db.from('clients').select('*').order('created_at',{ascending:false}),db.from('profiles').select('id,client_id,code_user,nom,role,statut,created_at').order('created_at',{ascending:false}),db.from('licence').select('*').order('created_at',{ascending:false})]);
+  const error=clientsResult.error||profilesResult.error||licencesResult.error;if(error)return toast(`Administration non chargée : ${error.message}`,'error');adminClients=clientsResult.data||[];adminProfiles=profilesResult.data||[];adminLicences=licencesResult.data||[];renderAdmin();
+}
+function statusBadge(status){return`<span class="status-badge status-${esc(status)}">${esc(status)}</span>`}
+function renderAdmin(){
+  const active=adminClients.filter(client=>client.statut==='active').length,expiredCount=adminLicences.filter(lic=>expired(lic.date_fin)||lic.statut==='expired').length;$('statClients').textContent=adminClients.length;$('statActiveClients').textContent=active;$('statUsers').textContent=adminProfiles.length;$('statExpired').textContent=expiredCount;$('addUserClient').innerHTML=adminClients.filter(client=>client.statut==='active').map(client=>`<option value="${client.id}">${esc(client.code_client)} — ${esc(client.nom)}</option>`).join('');
+  const clientTerm=normalizeCode($('clientSearch')?.value),visibleClients=adminClients.filter(client=>!clientTerm||normalizeCode(`${client.code_client} ${client.nom}`).includes(clientTerm));
+  $('clientsBody').innerHTML=visibleClients.map(client=>{const licence=adminLicences.find(item=>item.client_id===client.id),users=adminProfiles.filter(profile=>profile.client_id===client.id).length;return`<tr><td><strong>${esc(client.code_client)}</strong></td><td>${esc(client.nom)}</td><td>${statusBadge(client.statut)}</td><td class="ref-cell" title="${esc(licence?.cle_licence||'')}">${esc(licence?.cle_licence||'—')}</td><td><input class="admin-table-input" type="date" id="licDate_${licence?.id||0}" value="${licence?.date_fin||''}"></td><td>${users}</td><td><div class="action-cell"><button class="btn ${client.statut==='active'?'btn-danger':'btn-success'} btn-xs" onclick="setClientStatus('${client.id}','${client.statut==='active'?'blocked':'active'}')">${client.statut==='active'?'Bloquer':'Activer'}</button>${licence?`<button class="btn btn-primary btn-xs" onclick="saveLicence(${licence.id},'${licence.statut}')">Sauver</button><button class="btn ${licence.statut==='active'?'btn-warning':'btn-success'} btn-xs" onclick="toggleLicence(${licence.id},'${licence.statut==='active'?'blocked':'active'}')">${licence.statut==='active'?'Suspendre licence':'Activer licence'}</button>`:''}</div></td></tr>`}).join('');$('clientsEmpty').classList.toggle('hidden',visibleClients.length>0);$('clientsBody').closest('table').classList.toggle('hidden',visibleClients.length===0);
+  const userTerm=normalizeCode($('userSearch')?.value),visibleUsers=adminProfiles.filter(profile=>{const client=adminClients.find(item=>item.id===profile.client_id);return!userTerm||normalizeCode(`${profile.code_user} ${profile.nom||''} ${client?.nom||''}`).includes(userTerm)});
+  $('usersBody').innerHTML=visibleUsers.map(profile=>{const client=adminClients.find(item=>item.id===profile.client_id);return`<tr><td><strong>${esc(profile.code_user)}</strong></td><td>${esc(profile.nom||'—')}</td><td>${esc(client?.nom||'—')}</td><td><span class="role-badge">${esc(profile.role)}</span></td><td>${statusBadge(profile.statut)}</td><td>${profile.role==='superadmin'?'—':`<div class="action-cell"><button class="btn ${profile.statut==='active'?'btn-danger':'btn-success'} btn-xs" onclick="setUserStatus('${profile.id}','${profile.statut==='active'?'blocked':'active'}')">${profile.statut==='active'?'Bloquer':'Activer'}</button><button class="btn btn-warning btn-xs" onclick="resetUserPassword('${profile.id}','${esc(profile.code_user)}')">Mot de passe</button></div>`}</td></tr>`}).join('');$('usersEmpty').classList.toggle('hidden',visibleUsers.length>0);$('usersBody').closest('table').classList.toggle('hidden',visibleUsers.length===0);refreshIcons();
+}
+async function setClientStatus(id,status){if(!await confirmAction(`${status==='blocked'?'Bloquer':'Activer'} ce client et son accès à la caisse ?`,'Modifier le statut du client'))return;try{setBusy(true,'Mise à jour du client...');await invokeAdmin({action:'update_client_status',client_id:id,statut:status});await loadAdminData();toast('Statut du client mis à jour.')}catch(error){toast(error.message,'error')}finally{setBusy(false)}}
+async function setUserStatus(id,status){if(!await confirmAction(`${status==='blocked'?'Bloquer':'Activer'} cet utilisateur ?`,'Modifier le compte utilisateur'))return;try{setBusy(true,'Mise à jour du compte...');await invokeAdmin({action:'update_user_status',user_id:id,statut:status});await loadAdminData();toast('Statut utilisateur mis à jour.')}catch(error){toast(error.message,'error')}finally{setBusy(false)}}
+async function saveLicence(id,status){const date=$(`licDate_${id}`).value||null;try{setBusy(true,'Mise à jour de la licence...');await invokeAdmin({action:'update_licence',licence_id:id,date_fin:date,statut});await loadAdminData();toast('Licence mise à jour.')}catch(error){toast(error.message,'error')}finally{setBusy(false)}}
+async function toggleLicence(id,status){const date=$(`licDate_${id}`).value||null;if(!await confirmAction(`${status==='blocked'?'Suspendre':'Activer'} cette licence ?`,'Modifier la licence'))return;try{setBusy(true,'Mise à jour de la licence...');await invokeAdmin({action:'update_licence',licence_id:id,date_fin:date,statut});await loadAdminData();toast('Statut de la licence mis à jour.')}catch(error){toast(error.message,'error')}finally{setBusy(false)}}
+async function resetUserPassword(id,code){const password=window.prompt(`Nouveau mot de passe pour ${code} (8 caractères minimum) :`);if(!password)return;if(password.length<8)return toast('Mot de passe trop court.','warning');try{setBusy(true,'Modification du mot de passe...');await invokeAdmin({action:'reset_password',user_id:id,password});toast('Mot de passe modifié.')}catch(error){toast(error.message,'error')}finally{setBusy(false)}}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  const end=new Date();end.setFullYear(end.getFullYear()+1);$('newLicenceEnd').value=new Date(end.getTime()-end.getTimezoneOffset()*60000).toISOString().slice(0,10);$('sharedAppLink').value=location.href.split('?')[0].split('#')[0];$('dateFilter').value=localDate();
+  $('confirmCancel').addEventListener('click',()=>closeConfirm(false));$('confirmAccept').addEventListener('click',()=>closeConfirm(true));$('confirmModal').addEventListener('click',event=>{if(event.target===$('confirmModal'))closeConfirm(false)});
+  ['loginCode','loginPassword','loginLicence'].forEach(id=>$(id).addEventListener('keydown',event=>{if(event.key==='Enter')login()}));window.addEventListener('online',updateOnlineStatus);window.addEventListener('offline',updateOnlineStatus);updateOnlineStatus();refreshIcons();restoreSession();
+});
 </script>
-
 </body>
 </html>
