@@ -4,17 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#07111f">
-<title>Caisse Pro V12.1 — Multi-clients</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<title>Caisse Pro V12.2 — Offline</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./assets/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
 <script>
 const SUPABASE_URL = "https://qmkvyuimxnnmsexxchun.supabase.co";
 const SUPABASE_KEY = "sb_publishable_O_WzsuqcNb-laFphCV8jqQ_gNv8nbUr";
-const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const db = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 </script>
 <style>
 :root{
@@ -113,7 +114,7 @@ input[type="date"]{color-scheme:dark}
         <div class="feature-item"><i data-lucide="bar-chart-3"></i><strong>Suivi précis</strong><span>Soldes, bonus, frais, espèces et crédits centralisés.</span></div>
       </div>
     </div>
-    <div class="muted" style="position:relative;z-index:2;font-size:10px">CAISSE PRO · VERSION 12.1 PROFESSIONNELLE</div>
+    <div class="muted" style="position:relative;z-index:2;font-size:10px">CAISSE PRO · VERSION 12.2 OFFLINE-FIRST</div>
   </div>
 
   <div class="auth-panel">
@@ -128,7 +129,7 @@ input[type="date"]{color-scheme:dark}
       <div class="form-field"><label for="loginLicence">Clé licence</label><div class="input-wrap"><i data-lucide="key-round"></i><input id="loginLicence" placeholder="CP-CLIENT-XXXXXXXX" autocomplete="off"></div></div>
       <button id="loginButton" class="login-submit" onclick="login()">Se connecter</button>
       <div id="loginStatus" class="message info"></div>
-      <div class="auth-footer">Vos données sont isolées et protégées par les règles Supabase.</div>
+      <div class="auth-footer">Vos données sont isolées et protégées par les règles Supabase.</div><div id="offlineInstallStatus" class="message info" style="text-align:center;margin-top:8px">Première activation en ligne, puis utilisation hors connexion.</div>
     </div>
   </div>
 </section>
@@ -543,5 +544,6 @@ window.addEventListener('DOMContentLoaded',()=>{
   ['loginCode','loginPassword','loginLicence'].forEach(id=>$(id).addEventListener('keydown',event=>{if(event.key==='Enter')login()}));window.addEventListener('online',updateOnlineStatus);window.addEventListener('offline',updateOnlineStatus);updateOnlineStatus();refreshIcons();restoreSession();
 });
 </script>
+<script src="./offline-mode.js"></script>
 </body>
 </html>

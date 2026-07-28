@@ -1,28 +1,15 @@
 {
-  "id": "./",
-  "name": "Caisse Pro Multi-Clients",
+  "name": "Caisse Pro V12.2 Offline",
   "short_name": "Caisse Pro",
-  "description": "Gestion de caisse multi-clients avec fonctionnement hors ligne et synchronisation Supabase.",
-  "lang": "fr",
+  "description": "Caisse multi-clients avec activation initiale en ligne et utilisation locale hors connexion.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "orientation": "any",
   "background_color": "#07111f",
   "theme_color": "#07111f",
-  "categories": ["business", "finance", "productivity"],
+  "orientation": "any",
   "icons": [
-    {
-      "src": "./icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "./icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
+    { "src": "./assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "./assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ]
 }
